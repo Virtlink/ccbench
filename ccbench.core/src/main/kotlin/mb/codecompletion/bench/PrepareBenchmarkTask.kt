@@ -14,6 +14,7 @@ import mb.pie.api.ExecContext
 import mb.pie.api.Pie
 import mb.pie.api.Supplier
 import mb.pie.api.TaskDef
+import mb.resource.hierarchical.ResourcePath
 import mb.resource.text.TextResourceRegistry
 import mb.stratego.pie.AstStrategoTransformTaskDef
 import me.tongfei.progressbar.ProgressBar
@@ -36,7 +37,9 @@ import java.util.*
  */
 abstract class PrepareBenchmarkTask(
     private val parseTask: JsglrParseTaskDef,
+    private val getSourceFilesTask: TaskDef<ResourcePath, ListView<ResourcePath>>,
     private val analyzeTask: ConstraintAnalyzeTaskDef,
+//    private val analyzeTask: ConstraintAnalyzeMultiTaskDef,
     private val explicateTask: AstStrategoTransformTaskDef,
     private val implicateTask: AstStrategoTransformTaskDef,
     private val upgradePlaceholdersTask: AstStrategoTransformTaskDef,
@@ -87,6 +90,7 @@ abstract class PrepareBenchmarkTask(
     override fun exec(ctx: ExecContext, input: Input): ListView<TestCase> {
         val originalName = input.inputFile.withExtension("").toString()
         val resInputFile = input.projectDir.resolve(input.inputFile)
+        val projectDirResource = ctx.require(input.projectDir)
         val inputResource = ctx.require(resInputFile)
 
         val ast: IStrategoTerm
@@ -108,6 +112,16 @@ abstract class PrepareBenchmarkTask(
                 log.warn { "Failed to analyze $originalName: " + result.result.messages.filter { it.isErrorOrHigher }.joinToString()}
                 return ListView.of()
             }
+//            // Analyze the project
+//            val analyzeInput = ConstraintAnalyzeMultiTaskDef.Input(
+//                projectDirResource.key,
+//                parseTask.createRecoverableMultiAstSupplierFunction(getSourceFilesTask.createFunction())
+//            )
+//            val result = ctx.require(analyzeTask, analyzeInput).unwrap()
+//            if (result.result.messages.containsError()) {
+//                log.warn { "Failed to analyze $originalName: " + result.result.messages.messagesWithoutKey.filter { it.isErrorOrHigher }.joinToString()}
+//                return ListView.of()
+//            }
         } catch (ex: Exception) {
             log.warn(ex) { "Failed to analyze $originalName" }
             ex.printStackTrace()
@@ -180,10 +194,10 @@ abstract class PrepareBenchmarkTask(
     private fun buildIncompleteAsts(term: IStrategoTerm): List<TestCaseInfo<IStrategoTerm>> {
         // Replaced the term with a placeholder
         return listOf(TestCaseInfo(makePlaceholder("x"), 0 /* getStartOffset(term)*/, term)) +
-          // or replaced a subterm with all possible sub-asts with a placeholder
-          term.subterms.flatMapIndexed { i, subTerm ->
-              buildIncompleteAsts(subTerm).map { (newSubTerm, offset, expectedAst) -> TestCaseInfo(term.withSubterm(i, newSubTerm), offset, expectedAst) }
-          }
+                // or replaced a subterm with all possible sub-asts with a placeholder
+                term.subterms.flatMapIndexed { i, subTerm ->
+                    buildIncompleteAsts(subTerm).map { (newSubTerm, offset, expectedAst) -> TestCaseInfo(term.withSubterm(i, newSubTerm), offset, expectedAst) }
+                }
     }
 
     /**
