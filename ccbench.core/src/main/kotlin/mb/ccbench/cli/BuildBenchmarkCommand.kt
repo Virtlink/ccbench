@@ -15,7 +15,7 @@ import java.nio.file.Path
  *
  * @property ext The extension of files to be prepared.
  */
-abstract class PrepareBenchmarkCommand(
+abstract class BuildBenchmarkCommand(
     private val ext: String,
     private val benchmarkBuilder: BenchmarkBuilder,
 ) : CliktCommand(name = "prepare") {

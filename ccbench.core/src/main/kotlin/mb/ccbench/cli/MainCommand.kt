@@ -4,12 +4,12 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 
 abstract class MainCommand(
-    prepareBenchmarkCommand: PrepareBenchmarkCommand,
+    buildBenchmarkCommand: BuildBenchmarkCommand,
     runBenchmarkCommand: RunBenchmarkCommand,
 ): CliktCommand() {
     init {
         subcommands(
-            prepareBenchmarkCommand,
+            buildBenchmarkCommand,
             runBenchmarkCommand,
         )
     }

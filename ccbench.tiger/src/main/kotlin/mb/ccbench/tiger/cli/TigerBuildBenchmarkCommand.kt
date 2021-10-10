@@ -1,12 +1,12 @@
 package mb.ccbench.tiger.cli
 
-import mb.ccbench.cli.PrepareBenchmarkCommand
+import mb.ccbench.cli.BuildBenchmarkCommand
 import mb.ccbench.tiger.TigerBenchmarkBuilder
 import javax.inject.Inject
 
-class TigerPrepareBenchmarkCommand @Inject constructor(
+class TigerBuildBenchmarkCommand @Inject constructor(
     benchmarkBuilder: TigerBenchmarkBuilder
-) : PrepareBenchmarkCommand(
+) : BuildBenchmarkCommand(
     ".tig",
     benchmarkBuilder
 )
