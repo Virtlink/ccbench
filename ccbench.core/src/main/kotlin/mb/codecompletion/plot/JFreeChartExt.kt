@@ -1,35 +1,39 @@
 package mb.codecompletion.plot
 
-import com.itextpdf.kernel.pdf.PdfWriter
-import com.itextpdf.layout.Document
 import org.jfree.chart.JFreeChart
-import java.awt.Graphics2D
-import java.awt.geom.Rectangle2D
-import java.io.FileOutputStream
+import org.jfree.pdf.PDFDocument
+import java.awt.Rectangle
 import java.io.OutputStream
+import java.nio.file.Path
+import kotlin.io.path.outputStream
 
+/**
+ * Writes a JFreeChart to a PDF stream.
+ *
+ * The stream is not closed by this method.
+ *
+ * @param outputStream the output stream to write to
+ * @param width the width of the document
+ * @param height the height of the document
+ */
+fun JFreeChart.writeToPdf(outputStream: OutputStream, width: Int, height: Int) {
+    val doc = PDFDocument()
+    val bounds = Rectangle(width, height)
+    val page = doc.createPage(bounds)
+    val g2 = page.graphics2D
+    this.draw(g2, bounds)
+    outputStream.write(doc.pdfBytes)
+}
 
-//fun JFreeChart.writeToPdf(outputStream: OutputStream, width: Int, height: Int) {
-//    var writer: PdfWriter? = null
-//    val document = Document()
-//    try {
-//        writer = PdfWriter(outputStream)
-//        document.open()
-//        val contentByte: PdfContentByte = writer.getDirectContent()
-//        val template: PdfTemplate = contentByte.createTemplate(width, height)
-//        val graphics2d: Graphics2D = template.createGraphics(
-//            width, height,
-//            DefaultFontMapper()
-//        )
-//        val rectangle2d: Rectangle2D = Rectangle2D.Double(
-//            0, 0, width.toDouble(),
-//            height.toDouble()
-//        )
-//        chart.draw(graphics2d, rectangle2d)
-//        graphics2d.dispose()
-//        contentByte.addTemplate(template, 0, 0)
-//    } catch (e: Exception) {
-//        e.printStackTrace()
-//    }
-//    document.close()
-//}
+/**
+ * Writes a JFreeChart to a PDF file.
+ *
+ * @param file the file to write to
+ * @param width the width of the document
+ * @param height the height of the document
+ */
+fun JFreeChart.writeToPdf(file: Path, width: Int, height: Int) {
+    file.outputStream().use { outputStream ->
+        writeToPdf(outputStream, width, height)
+    }
+}

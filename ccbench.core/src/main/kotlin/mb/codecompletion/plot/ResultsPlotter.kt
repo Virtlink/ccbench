@@ -1,71 +1,50 @@
 package mb.codecompletion.plot
 
-import mb.codecompletion.bench.BenchmarkResults
+import mb.codecompletion.bench.results.BenchResultSet
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.axis.NumberAxis
 import org.jfree.chart.plot.PlotOrientation
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer
+import org.jfree.data.xy.XYDataItem
 import org.jfree.data.xy.XYDataset
 import org.jfree.data.xy.XYSeries
 import org.jfree.data.xy.XYSeriesCollection
 import java.awt.Color
-import java.io.OutputStream
-
-
-//import org.jfree.ui.ApplicationFrame;
-//import org.jfree.ui.RefineryUtilities;
 
 /**
  * Plots the results.
  */
 class ResultsPlotter {
 
-    fun plot(results: BenchmarkResults): JFreeChart {
-        // create the chart...
-
-        val dataset = buildDataset(results)
+    fun plot(resultSet: List<BenchResultSet>): JFreeChart {
+        val dataset = buildDataset(resultSet)
         val chart = buildLineChart(dataset)
 
         return chart
     }
 
-    private fun buildDataset(results: BenchmarkResults): XYDataset {
-        val series1 = XYSeries("First")
-        series1.add(1.0, 1.0)
-        series1.add(2.0, 4.0)
-        series1.add(3.0, 3.0)
-        series1.add(4.0, 5.0)
-        series1.add(5.0, 5.0)
-        series1.add(6.0, 7.0)
-        series1.add(7.0, 7.0)
-        series1.add(8.0, 8.0)
-        val series2 = XYSeries("Second")
-        series2.add(1.0, 5.0)
-        series2.add(2.0, 7.0)
-        series2.add(3.0, 6.0)
-        series2.add(4.0, 8.0)
-        series2.add(5.0, 4.0)
-        series2.add(6.0, 4.0)
-        series2.add(7.0, 2.0)
-        series2.add(8.0, 1.0)
-        val series3 = XYSeries("Third")
-        series3.add(3.0, 4.0)
-        series3.add(4.0, 3.0)
-        series3.add(5.0, 2.0)
-        series3.add(6.0, 3.0)
-        series3.add(7.0, 6.0)
-        series3.add(8.0, 3.0)
-        series3.add(9.0, 4.0)
-        series3.add(10.0, 3.0)
+    private fun buildDataset(resultSet: List<BenchResultSet>): XYDataset {
         val dataset = XYSeriesCollection()
-        dataset.addSeries(series1)
-        dataset.addSeries(series2)
-        dataset.addSeries(series3)
+        for (result in resultSet){
+            val series = buildXYSeries(result)
+            dataset.addSeries(series)
+        }
         return dataset
     }
 
-    fun buildLineChart(dataset: XYDataset): JFreeChart {
+    private fun buildXYSeries(resultSet: BenchResultSet): XYSeries {
+        val series = XYSeries(resultSet.name)
+        val items = resultSet.successResults.sortedBy { it.charSize }.map {
+            XYDataItem(it.charSize, it.timings.totalTime)
+        }
+        for (item in items) {
+            series.add(item)
+        }
+        return series
+    }
+
+    private fun buildLineChart(dataset: XYDataset): JFreeChart {
         // create the chart...
         val chart = ChartFactory.createXYLineChart(
             "Performance",  // chart title
