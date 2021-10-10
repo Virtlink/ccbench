@@ -4,8 +4,6 @@ import mb.ccbench.di.BenchLoggerModule
 import mb.ccbench.di.DaggerBenchLoggerComponent
 import mb.ccbench.di.DaggerBenchPlatformComponent
 import mb.ccbench.di.DaggerBenchResourceServiceComponent
-import mb.ccbench.tiger.di.DaggerTigerBenchComponent
-import mb.ccbench.tiger.di.DaggerTigerBenchLanguageComponent
 import mb.ccbench.tiger.di.TigerBenchModule
 import mb.pie.dagger.DaggerRootPieComponent
 import mb.pie.dagger.RootPieModule
@@ -58,8 +56,8 @@ fun main(args: Array<String>) {
         .build()
 
     pieModule.addTaskDefs(
+        languageComponent.buildBenchmarkTask,
         languageComponent.runBenchmarkTask,
-        languageComponent.prepareBenchmarkTask,
     )
 
     val benchComponent = mb.ccbench.tiger.di.DaggerTigerBenchComponent.builder()

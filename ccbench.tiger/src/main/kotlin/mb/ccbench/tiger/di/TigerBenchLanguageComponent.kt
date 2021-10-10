@@ -28,5 +28,5 @@ import org.spoofax.interpreter.terms.ITermFactory
 interface TigerBenchLanguageComponent: TigerComponent {
     val termFactory: ITermFactory
     val runBenchmarkTask: TigerRunBenchmarkTask
-    val prepareBenchmarkTask: TigerBuildBenchmarkTask
+    val buildBenchmarkTask: TigerBuildBenchmarkTask
 }

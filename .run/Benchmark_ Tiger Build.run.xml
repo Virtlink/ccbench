@@ -4,7 +4,7 @@
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="run --args=&quot;build Tiger -p $PROJECT_DIR$/../../tiger/tiger-benchmark/ -o $PROJECT_DIR$/../../tiger/tiger-tests/&quot;" />
+      <option name="scriptParameters" value=":ccbench.tiger:run --args=&quot;build Tiger -p $PROJECT_DIR$/../../tiger/tiger-benchmark/ -o $PROJECT_DIR$/../../tiger/tiger-tests/&quot;" />
       <option name="taskDescriptions">
         <list />
       </option>
