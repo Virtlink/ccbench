@@ -2,6 +2,7 @@
 *.class
 *.log
 *.jar
+!/libs/strategolib.jar
 *.war
 *.nar
 *.ear
