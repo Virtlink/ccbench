@@ -4,14 +4,10 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 
 abstract class MainCommand(
-    buildBenchmarkCommand: BuildBenchmarkCommand,
-    runBenchmarkCommand: RunBenchmarkCommand,
+    vararg subcommands: CliktCommand
 ): CliktCommand() {
     init {
-        subcommands(
-            buildBenchmarkCommand,
-            runBenchmarkCommand,
-        )
+        subcommands(*subcommands)
     }
 
     override fun run() = Unit

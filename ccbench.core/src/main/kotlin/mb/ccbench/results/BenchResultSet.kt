@@ -44,7 +44,12 @@ data class BenchResultSet(
          */
         fun readFromCsv(name: String, reader: Reader): BenchResultSet {
             val results = mutableListOf<BenchResult>()
-            CSVParser(NonClosingReader(reader), csvFormat).use { parser ->
+            val bufferedReader = reader.buffered()
+            val firstLine = bufferedReader.readLine()
+            if (!firstLine.startsWith("sep="))
+                throw IllegalStateException("Expected first line specifying separator, got: $firstLine")
+            val headerLine = bufferedReader.readLine() // Discarded
+            CSVParser(NonClosingReader(bufferedReader), csvFormat).use { parser ->
                 for (record in parser) {
                     val result = BenchResult.fromCsvRecord(record.toList())
                     results.add(result)
@@ -88,7 +93,7 @@ data class BenchResultSet(
          * @param writer the writer to write to
          */
         fun writeToCsv(resultSet: BenchResultSet, writer: Writer) {
-            writer.write("sep=;\n")
+            writer.write("sep=${csvFormat.delimiterString}\n")
             CSVPrinter(NonClosingWriter(writer), csvFormat).use { printer ->
                 // Start with the successful results
                 for (result in resultSet.results.filter { it.kind == BenchResultKind.Success }) {
@@ -161,6 +166,9 @@ data class BenchResult(
         val csvHeaders = listOf(
             "Name",
             "Kind",
+            "CharSize",
+            "TokenSize",
+            "ASTSize",
             "NumberOfResults"
         ) + Timings.csvHeaders
 

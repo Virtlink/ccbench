@@ -1,5 +1,6 @@
 package mb.ccbench.plot
 
+import mb.ccbench.results.BenchResult
 import mb.ccbench.results.BenchResultSet
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.JFreeChart
@@ -13,43 +14,27 @@ import org.jfree.data.xy.XYSeriesCollection
 import java.awt.Color
 
 /**
- * Plots the results.
+ * Plots the result sets as a chart with the given time,
+ * one line for each result set.
+ *
+ * @property projectY Function that projects the time out of the result.
  */
-class ResultsPlotter {
+class TimePlotter(
+    private val title: String,
+    private val xAxisLabel: String,
+    private val yAxisLabel: String,
+    private val projectX: (BenchResult) -> Number,
+    private val projectY: (BenchResult) -> Number,
+) : MultiResultsPlotter {
 
-    fun plot(resultSet: List<BenchResultSet>): JFreeChart {
-        val dataset = buildDataset(resultSet)
-        val chart = buildLineChart(dataset)
+    override fun plotToChart(resultSets: List<BenchResultSet>): JFreeChart {
+        val dataset = buildLineChartDataset(resultSets)
 
-        return chart
-    }
-
-    private fun buildDataset(resultSet: List<BenchResultSet>): XYDataset {
-        val dataset = XYSeriesCollection()
-        for (result in resultSet){
-            val series = buildXYSeries(result)
-            dataset.addSeries(series)
-        }
-        return dataset
-    }
-
-    private fun buildXYSeries(resultSet: BenchResultSet): XYSeries {
-        val series = XYSeries(resultSet.name)
-        val items = resultSet.successResults.sortedBy { it.charSize }.map {
-            XYDataItem(it.charSize, it.timings.totalTime)
-        }
-        for (item in items) {
-            series.add(item)
-        }
-        return series
-    }
-
-    private fun buildLineChart(dataset: XYDataset): JFreeChart {
         // create the chart...
         val chart = ChartFactory.createXYLineChart(
-            "Performance",  // chart title
-            "X",            // x axis label
-            "Y",            // y axis label
+            title,          // chart title
+            xAxisLabel,     // x axis label
+            yAxisLabel,     // y axis label
             dataset,        // data
             PlotOrientation.VERTICAL,
             true,           // include legend
@@ -83,4 +68,35 @@ class ResultsPlotter {
         return chart
     }
 
+    /**
+     * Builds a dataset from the given result sets.
+     *
+     * @param resultSets the result sets
+     * @return the resulting data set
+     */
+    private fun buildLineChartDataset(resultSets: List<BenchResultSet>): XYDataset {
+        val dataset = XYSeriesCollection()
+        for (resultSet in resultSets){
+            val series = buildXYSeries(resultSet)
+            dataset.addSeries(series)
+        }
+        return dataset
+    }
+
+    /**
+     * Builds an XY-series from the given result set.
+     *
+     * @param resultSet the result set
+     * @return the XY-series
+     */
+    private fun buildXYSeries(resultSet: BenchResultSet): XYSeries {
+        val series = XYSeries(resultSet.name)
+        val items = resultSet.successResults.map {
+            XYDataItem(projectX(it), projectY(it))
+        }.sortedBy { it.xValue }
+        for (item in items) {
+            series.add(item)
+        }
+        return series
+    }
 }
