@@ -14,5 +14,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("mb.codecompletion.bench.tiger.MainKt")
+    mainClass.set("mb.ccbench.tiger.MainKt")
 }
