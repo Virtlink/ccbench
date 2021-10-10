@@ -87,7 +87,7 @@ abstract class BenchmarkRunner(
         )
         log.info { "${testCase.name}: ${result.kind} (${result.timings.totalTime} ms)"}
         // Restore the file
-        val origInputFile = srcProjectDir.resolve(testCase.inputFile)
+        val origInputFile = srcProjectDir.resolve(testCase.file)
         Files.copy(origInputFile, dstInputFile, StandardCopyOption.REPLACE_EXISTING)
         return result
     }
