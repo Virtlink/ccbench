@@ -22,98 +22,42 @@ To create an installation of this project:
 ./gradlew installDist
 ```
 
-When using Docker, additionally:
-```bash
-docker build . --tag ccbench-tiger
-```
 
 ## Run
-With `tiger/` the tiger repository,
-and `(pwd)/tiger-tests/` the absolute tests directory,
-and `(pwd)/tiger-output/` the absolute output directory,
-and `ccbench.tiger/build/install/ccbench.tiger/bin/ccbench.tiger` the build script:
 
-### Prepare live
+### Copy files to Remote Server
 
 ```bash
-# In the ccbench source directory
-./ccbench.tiger/build/install/ccbench.tiger/bin/ccbench.tiger \
-  prepare Tiger \
-  -p tiger/org.metaborg.lang.tiger.example/ \
-  -o tiger-tests/
-```
-
-### Prepare in Docker
-
-```fish
-docker run -it --rm \
-  -v ~/repos/tiger/:/home/tiger/ \
-  -v (pwd)/tiger-tests/:/home/tiger-tests/ \
-  -v (pwd)/tiger-output/:/home/tiger-output/ \
-  ccbench-tiger \
-  prepare Tiger \
-  -p /home/tiger/org.metaborg.lang.tiger.example/ \
-  -o /home/tiger-tests/
-```
-
-### Run live
-
-```bash
-# In the ccbench source directory
-./ccbench.tiger/build/install/ccbench.tiger/bin/ccbench.tiger \
-  run Tiger \
-  -p tiger/org.metaborg.lang.tiger.example/ \
-  -i tiger-tests/Tiger.yml \
-  -o tiger-output/ \
-  --seed 123456
-```
-
-> Note: Add `-s 100` to run only 100 tests.
->
-### Run in Docker
-
-```fish
-docker run -t -d \
-  -v ~/repos/tiger/:/home/tiger/ \
-  -v (pwd)/tiger-tests/:/home/tiger-tests/ \
-  -v (pwd)/tiger-output/:/home/tiger-output/ \
-  --name ccbench-tiger-run \
-  ccbench-tiger \
-  run Tiger \
-  -p /home/tiger/org.metaborg.lang.tiger.example/ \
-  -i /home/tiger-tests/Tiger.yml \
-  -o /home/tiger-output/ \
-  --seed 123456
-docker rm ccbench-tiger-run
-```
-
-> Note: Add `-s 100` to run only 100 tests.
-
-To see the logs of the container:
-
-```bash
-docker logs -f ccbench-tiger-run
-```
-
-## Copy CCBench to remote machine
-To copy CCBench to a remote machine:
-
-```bash
-# In the ccbench source directory
+# Copy ccbench.tiger
+# - in the ccbench source directory:
 rsync -av ./ccbench.tiger/build/install/ccbench.tiger/ w2018:ccbench.tiger
+
+# Copy the source project
+# - in the Tiger repo directory:
+rsync -av ./tiger-benchmark/ w2018:tiger-benchmark/
+
+# (Optionally) copy the test files
+# - in the directory where the test files where generated
+rsync -av ./tiger-tests/ w2018:tiger-tests/
+
+# (Optionally) build tests
+# - in the ccbench source directory
+./ccbench.tiger/bin/ccbench.tiger \
+  build Tiger \
+  -p tiger-benchmark/ \
+  -o tiger-tests/
+
+# Run tests
+# - in the ccbench source directory
+./ccbench.tiger/bin/ccbench.tiger \
+  run Tiger \
+  -p tiger-benchmark/ \
+  -i tiger-tests/Tiger.yml \
+  -o tiger-results/ \
+  --seed 12345
 ```
 
-## Copy Dockerfile to remote machine
-To copy this image to a remote machine:
-
-```bash
-docker save ccbench-tiger | gzip | pv | ssh w2018 'gunzip | docker load'
-```
-
-Or, probably slower:
-```bash
-docker save ccbench-tiger | bzip2 | pv | ssh w2018 docker load
-```
+> Note: Add `-s 100` to run only 100 tests.
 
 ## Clone Tiger Repo
 ```bash
@@ -125,6 +69,7 @@ git clone --depth 1 git@github.com:MetaBorgCube/metaborg-tiger.git tiger
 ```bash
 scp w2018:tiger-output/Tiger.csv Tiger.csv
 ```
+
 
 
 [1]: git@github.com:metaborg/devenv.git
