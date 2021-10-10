@@ -1,9 +1,15 @@
 package mb.codecompletion.bench
 
+import mb.codecompletion.bench.results.BenchResult
+import mb.codecompletion.bench.results.BenchResultKind
+import mb.codecompletion.bench.results.Timings
 import mb.codecompletion.bench.utils.runParse
 import mb.common.region.Region
 import mb.jsglr.pie.JsglrParseTaskDef
 import mb.nabl2.terms.ITerm
+import mb.nabl2.terms.ITermVar
+import mb.nabl2.terms.matching.TermPattern
+import mb.nabl2.terms.substitution.ISubstitution
 import mb.pie.api.ExecContext
 import mb.pie.api.Pie
 import mb.pie.api.TaskDef
@@ -13,8 +19,15 @@ import mb.statix.TermCodeCompletionResult
 import mb.statix.codecompletion.pie.CodeCompletionTaskDef
 import mb.statix.codecompletion.pie.MeasuringCodeCompletionEventHandler
 import mu.KotlinLogging
+import org.spoofax.interpreter.terms.IStrategoAppl
+import org.spoofax.interpreter.terms.IStrategoList
+import org.spoofax.interpreter.terms.IStrategoTerm
+import org.spoofax.interpreter.terms.IStrategoTuple
+import org.spoofax.jsglr.client.imploder.ImploderAttachment
+import org.spoofax.terms.attachments.OriginAttachment
 import java.io.Serializable
 import java.nio.file.Path
+import kotlin.io.path.fileSize
 
 /**
  * Runs a single benchmark.
@@ -22,7 +35,7 @@ import java.nio.file.Path
 abstract class RunBenchmarkTask(
     private val parseTask: JsglrParseTaskDef,
     private val codeCompletionTask: CodeCompletionTaskDef,
-) : TaskDef<RunBenchmarkTask.Input, BenchmarkResult> {
+) : TaskDef<RunBenchmarkTask.Input, BenchResult> {
 
     data class Input(
         val benchmark: Benchmark,
@@ -48,7 +61,7 @@ abstract class RunBenchmarkTask(
         testCase: TestCase,
         expectedTerm: ITerm,
         dstInputResourceKey: ResourceKey,
-    ): BenchmarkResult {
+    ): BenchResult {
         pie.newSession().use { session ->
             val topDownSession = session.updateAffectedBy(setOf(
                 dstInputResourceKey
@@ -73,15 +86,18 @@ abstract class RunBenchmarkTask(
 
     override fun getId(): String = RunBenchmarkTask::class.java.name
 
-    override fun exec(ctx: ExecContext, input: Input): BenchmarkResult {
+    override fun exec(ctx: ExecContext, input: Input): BenchResult {
         val dstInputFile = input.targetProjectDir.resolve(input.testCase.file)
 
         // We parse the input resource here, such that we don't measure the overhead of parsing the input resource again
         val dstInputResource = ctx.require(dstInputFile)
-        parseTask.runParse(ctx, dstInputResource.key)
+        val charSize = dstInputFile.fileSize()  // Assumes UTF-8
+        val ast = parseTask.runParse(ctx, dstInputResource.key)
+        val tokenSize = ImploderAttachment.getTokenizer(ast).tokenCount.toLong()
+        val astSize = computeTermSize(ast)
 
         // Execute code completion
-        var kind: BenchmarkResultKind
+        var kind: BenchResultKind
         val eventHandler = MeasuringCodeCompletionEventHandler()
         var results: TermCodeCompletionResult? = null
         try {
@@ -98,41 +114,74 @@ abstract class RunBenchmarkTask(
                 val extProposals = results.proposals.filterIsInstance<TermCodeCompletionItem>()
                 val success = extProposals.filter { tryMatchExpectation(results.placeholder, input.expectedTerm, it.term) }.isNotEmpty()
                 if (success) {
-                    BenchmarkResultKind.Success
+                    BenchResultKind.Success
                 } else {
                     log.warn { "Expected: ${input.expectedTerm}, got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
-                    BenchmarkResultKind.Failed
+                    BenchResultKind.Failed
                 }
             } else {
                 log.warn { "Expected: ${input.expectedTerm}, got: <nothing>" }
-                BenchmarkResultKind.NoResults
+                BenchResultKind.NoResults
             }
         } catch (ex: IllegalStateException) {
             kind = if (ex.message?.contains("input program validation failed") == true) {
                 log.warn { "Analysis failed: ${ex.message}" }
-                BenchmarkResultKind.AnalysisFailed
+                BenchResultKind.AnalysisFailed
             } else {
                 log.warn(ex) { "Error running test." }
-                BenchmarkResultKind.Error
+                BenchResultKind.Error
             }
         }
 
-        return BenchmarkResult(
+        return BenchResult(
             input.testCase.name,
             kind,
-            results?.proposals?.toList() ?: emptyList(),
+            charSize,
+            tokenSize,
+            astSize,
+            results?.proposals?.size() ?: 0,
+            Timings(
+                (eventHandler.parseTime ?: -1).toDouble() / NS_PER_MS,
+                (eventHandler.preparationTime ?: -1).toDouble() / NS_PER_MS,
+                (eventHandler.analysisTime ?: -1).toDouble() / NS_PER_MS,
+                (eventHandler.codeCompletionTime ?: -1).toDouble() / NS_PER_MS,
+                (eventHandler.finishingTime ?: -1).toDouble() / NS_PER_MS,
+                (eventHandler.totalTime ?: -1).toDouble() / NS_PER_MS,
 
-            (eventHandler.parseTime ?: -1).toDouble() / NS_PER_MS,
-            (eventHandler.preparationTime ?: -1).toDouble() / NS_PER_MS,
-            (eventHandler.analysisTime ?: -1).toDouble() / NS_PER_MS,
-            (eventHandler.codeCompletionTime ?: -1).toDouble() / NS_PER_MS,
-            (eventHandler.finishingTime ?: -1).toDouble() / NS_PER_MS,
-            (eventHandler.totalTime ?: -1).toDouble() / NS_PER_MS,
-
-            (0).toDouble() / NS_PER_MS, // TODO
-            (0).toDouble() / NS_PER_MS, // TODO
-            (0).toDouble() / NS_PER_MS, // TODO
-            (0).toDouble() / NS_PER_MS, // TODO
+                (0).toDouble() / NS_PER_MS, // TODO
+                (0).toDouble() / NS_PER_MS, // TODO
+                (0).toDouble() / NS_PER_MS, // TODO
+                (0).toDouble() / NS_PER_MS, // TODO
+            )
         )
+    }
+
+    private fun tryMatchExpectation(
+        placeholder: ITermVar,
+        expectedTerm: ITerm,
+        actualTerm: ITerm,
+    ): Boolean {
+        // If trying to replace by the same variable indicates that the proposal
+        // did not replace the variable by a term.
+        if (placeholder == actualTerm) return false
+        // If the variable can never be replaced by the actual term, we reject this proposal.
+        return trySubstitute(expectedTerm, actualTerm) != null
+    }
+
+    private fun trySubstitute(expectedTerm: ITerm, actualTerm: ITerm): ISubstitution.Immutable? {
+        // Does the term we got, including variables, match the expected term?
+        return TermPattern.P().fromTerm(actualTerm).match(expectedTerm).orElse(null)
+    }
+
+    /**
+     * Computes the term size, excluding annotations.
+     */
+    private fun computeTermSize(term: IStrategoTerm): Long {
+        return when (term) {
+            is IStrategoAppl -> 1 + term.subterms.sumOf { computeTermSize(it) }
+            is IStrategoList -> 1 + term.subterms.sumOf { computeTermSize(it) }
+            is IStrategoTuple -> 1 + term.subterms.sumOf { computeTermSize(it) }
+            else -> 1
+        }
     }
 }

@@ -9,6 +9,7 @@ import com.github.ajalt.clikt.parameters.types.long
 import com.github.ajalt.clikt.parameters.types.path
 import mb.codecompletion.bench.Benchmark
 import mb.codecompletion.bench.BenchmarkRunner
+import mb.codecompletion.bench.results.BenchResultSet
 import mb.codecompletion.bench.utils.withExtension
 import java.nio.file.Files
 import java.nio.file.Path
@@ -49,7 +50,7 @@ abstract class RunBenchmarkCommand(
             seed,
         )
         Files.createDirectories(actualOutputFile.parent)
-        results.writeAsCsv(actualOutputFile)
+        BenchResultSet.writeToCsv(results, actualOutputFile)
         println("Done!")
     }
 }

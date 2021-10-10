@@ -7,5 +7,6 @@ import javax.inject.Inject
 class TigerPrepareBenchmarkCommand @Inject constructor(
     benchmarkBuilder: TigerBenchmarkBuilder
 ) : PrepareBenchmarkCommand(
+    ".tig",
     benchmarkBuilder
 )

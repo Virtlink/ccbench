@@ -7,17 +7,20 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.long
 import com.github.ajalt.clikt.parameters.types.path
+import dagger.assisted.Assisted
 import mb.codecompletion.bench.BenchmarkBuilder
 import java.nio.file.Path
 
 /**
  * Command that prepares tests.
+ *
+ * @property ext The extension of files to be prepared.
  */
 abstract class PrepareBenchmarkCommand(
+    private val ext: String,
     private val benchmarkBuilder: BenchmarkBuilder,
 ) : CliktCommand(name = "prepare") {
     val name: String by argument(help = "Name of the benchmark")
-    val ext: String by option("-e", "--ext", help = "File extension").required()
 
     val projectDir: Path by option("-p", "--project", help = "Project directory").path(mustExist = true, canBeFile = false, canBeDir = true).required()
     val outputDir: Path? by option("-o", "--output", help = "Output directory").path(mustExist = false, canBeFile = false, canBeDir = true)
@@ -35,7 +38,7 @@ abstract class PrepareBenchmarkCommand(
         benchmarkBuilder.build(
             name,
             actualProjectDir,
-            ".$ext",
+            ext,
             actualOutputDir,
             actualTestCaseDir,
             samples,

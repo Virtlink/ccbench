@@ -1,7 +1,7 @@
 package mb.codecompletion.bench.tiger.di
 
 import dagger.Component
-import mb.codecompletion.bench.tiger.TigerPrepareBenchmarkTask
+import mb.codecompletion.bench.tiger.TigerBuildBenchmarkTask
 import mb.codecompletion.bench.tiger.TigerRunBenchmarkTask
 import mb.codecompletion.bench.di.BenchLoggerComponent
 import mb.codecompletion.bench.di.BenchPlatformComponent
@@ -28,5 +28,5 @@ import org.spoofax.interpreter.terms.ITermFactory
 interface TigerBenchLanguageComponent: TigerComponent {
     val termFactory: ITermFactory
     val runBenchmarkTask: TigerRunBenchmarkTask
-    val prepareBenchmarkTask: TigerPrepareBenchmarkTask
+    val prepareBenchmarkTask: TigerBuildBenchmarkTask
 }

@@ -1,6 +1,6 @@
-package mb.codecompletion.bench
+package mb.codecompletion.bench.results
 
-enum class BenchmarkResultKind {
+enum class BenchResultKind {
     Success,
     Failed,
     Error,

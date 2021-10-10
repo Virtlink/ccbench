@@ -33,9 +33,9 @@ import java.nio.file.Path
 import java.util.*
 
 /**
- * Runs a single benchmark.
+ * Builds a single benchmark.
  */
-abstract class PrepareBenchmarkTask(
+abstract class BuildBenchmarkTask(
     private val parseTask: JsglrParseTaskDef,
     private val getSourceFilesTask: TaskDef<ResourcePath, ListView<ResourcePath>>,
     private val analyzeTask: ConstraintAnalyzeTaskDef,
@@ -48,7 +48,7 @@ abstract class PrepareBenchmarkTask(
     private val textResourceRegistry: TextResourceRegistry,
     private val termFactory: ITermFactory,
     private val termWriter: SimpleTextTermWriter,
-) : TaskDef<PrepareBenchmarkTask.Input, ListView<TestCase>> {
+) : TaskDef<BuildBenchmarkTask.Input, ListView<TestCase>> {
 
     /**
      * The input arguments for the task.
@@ -85,7 +85,7 @@ abstract class PrepareBenchmarkTask(
         }
     }
 
-    override fun getId(): String = PrepareBenchmarkTask::class.java.name
+    override fun getId(): String = BuildBenchmarkTask::class.java.name
 
     override fun exec(ctx: ExecContext, input: Input): ListView<TestCase> {
         val originalName = input.inputFile.withExtension("").toString()

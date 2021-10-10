@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class TigerBenchmarkBuilder @Inject constructor(
     pie: Pie,
-    prepareBenchmarkTask: TigerPrepareBenchmarkTask
+    prepareBenchmarkTask: TigerBuildBenchmarkTask
 ) : BenchmarkBuilder(
     pie,
     prepareBenchmarkTask

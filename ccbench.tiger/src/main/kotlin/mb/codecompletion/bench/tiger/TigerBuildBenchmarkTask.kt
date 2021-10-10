@@ -1,21 +1,17 @@
 package mb.codecompletion.bench.tiger
 
-import mb.codecompletion.bench.PrepareBenchmarkTask
+import mb.codecompletion.bench.BuildBenchmarkTask
 import mb.resource.text.TextResourceRegistry
-import mb.tiger.task.TigerAnalyze
-import mb.tiger.task.TigerDowngradePlaceholdersStatix
-import mb.tiger.task.TigerPPPartial
-import mb.tiger.task.TigerParse
-import mb.tiger.task.TigerPostAnalyzeStatix
-import mb.tiger.task.TigerPreAnalyzeStatix
-import mb.tiger.task.TigerUpgradePlaceholdersStatix
+import mb.tiger.task.*
 import org.spoofax.interpreter.terms.ITermFactory
 import org.spoofax.terms.io.SimpleTextTermWriter
 import javax.inject.Inject
 
-class TigerPrepareBenchmarkTask @Inject constructor(
+class TigerBuildBenchmarkTask @Inject constructor(
     parseTask: TigerParse,
+    getSourceFilesTask: TigerGetSourceFiles,
     analyzeTask: TigerAnalyze,
+//    analyzeTask: TigerAnalyzeMulti,
     explicateTask: TigerPreAnalyzeStatix,
     implicateTask: TigerPostAnalyzeStatix,
     upgradePlaceholdersTask: TigerUpgradePlaceholdersStatix,
@@ -24,8 +20,9 @@ class TigerPrepareBenchmarkTask @Inject constructor(
     textResourceRegistry: TextResourceRegistry,
     termFactory: ITermFactory,
     termWriter: SimpleTextTermWriter
-) : PrepareBenchmarkTask(
+) : BuildBenchmarkTask(
     parseTask,
+    getSourceFilesTask,
     analyzeTask,
     explicateTask,
     implicateTask,

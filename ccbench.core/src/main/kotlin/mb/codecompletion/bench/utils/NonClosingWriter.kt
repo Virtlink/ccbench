@@ -2,6 +2,12 @@ package mb.codecompletion.bench.utils
 
 import java.io.Writer
 
+/**
+ * A non-closing writer wrapper.
+ *
+ * It is the responsibility of the code that creates a writer to close it.
+ * This wrapper prevents users of the writer from closing it.
+ */
 class NonClosingWriter(
     private val innerWriter: Writer
 ) : Writer() {
@@ -45,5 +51,9 @@ class NonClosingWriter(
 
     override fun append(c: Char): Writer {
         return innerWriter.append(c)
+    }
+
+    override fun toString(): String {
+        return innerWriter.toString()
     }
 }

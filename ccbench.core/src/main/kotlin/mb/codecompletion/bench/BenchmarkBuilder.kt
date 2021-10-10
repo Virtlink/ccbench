@@ -6,7 +6,6 @@ import org.apache.commons.io.FileUtils
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
-import javax.inject.Inject
 import kotlin.io.path.extension
 import kotlin.streams.toList
 
@@ -15,7 +14,7 @@ import kotlin.streams.toList
  */
 abstract class BenchmarkBuilder(
     private val pie: Pie,
-    private val prepareBenchmarkTask: PrepareBenchmarkTask,
+    private val buildBenchmarkTask: BuildBenchmarkTask,
 ) {
 
     private val log = KotlinLogging.logger {}
@@ -56,7 +55,7 @@ abstract class BenchmarkBuilder(
         // Create and write the test cases
         val testCases = inputFiles.flatMap {
             log.trace { "Preparing $it..." }
-            val result = prepareBenchmarkTask.run(pie, projectDir, it, testCaseDir, sample, rnd)
+            val result = buildBenchmarkTask.run(pie, projectDir, it, testCaseDir, sample, rnd)
             log.info { "Prepared $it." }
             result
         }

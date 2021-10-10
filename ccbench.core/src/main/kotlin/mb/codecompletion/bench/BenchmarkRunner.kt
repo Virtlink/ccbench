@@ -1,5 +1,7 @@
 package mb.codecompletion.bench
 
+import mb.codecompletion.bench.results.BenchResult
+import mb.codecompletion.bench.results.BenchResultSet
 import mb.codecompletion.bench.utils.sample
 import mb.nabl2.terms.stratego.StrategoTerms
 import mb.pie.api.Pie
@@ -31,7 +33,7 @@ abstract class BenchmarkRunner(
         tmpProjectDir: Path,
         sample: Int?,
         seed: Long?
-    ): BenchmarkResults {
+    ): BenchResultSet {
         val testCaseDir = benchmarkFile.parent.resolve(benchmark.testCaseDirectory)
 
         // Ensure the tmp project directory is empty, and copy the project
@@ -42,7 +44,7 @@ abstract class BenchmarkRunner(
         val rnd = Random(seed ?: System.nanoTime())
 
         // Run the tests
-        val results = mutableListOf<BenchmarkResult>()
+        val results = mutableListOf<BenchResult>()
 
         // Pick a random sample of test cases, or randomize the order
         val selectedTestCases = benchmark.testCases.sample(sample ?: benchmark.testCases.size, rnd)
@@ -51,7 +53,7 @@ abstract class BenchmarkRunner(
             results.add(result)
         }
 
-        return BenchmarkResults.fromResults(results)
+        return BenchResultSet(benchmark.name, results)
     }
 
     fun runTest(
@@ -60,7 +62,7 @@ abstract class BenchmarkRunner(
         srcProjectDir: Path,
         dstProjectDir: Path,
         testCase: TestCase
-    ): BenchmarkResult {
+    ): BenchResult {
         log.trace { "Preparing ${testCase.name}..." }
         // Copy the file to the temporary directory
         val srcInputFile = testCaseDir.resolve(testCase.inputFile)
@@ -83,7 +85,7 @@ abstract class BenchmarkRunner(
             expectedTerm,
             FSResource(dstInputFile).key
         )
-        log.info { "${testCase.name}: ${result.kind} (${result.totalTime} ms)"}
+        log.info { "${testCase.name}: ${result.kind} (${result.timings.totalTime} ms)"}
         // Restore the file
         val origInputFile = srcProjectDir.resolve(testCase.inputFile)
         Files.copy(origInputFile, dstInputFile, StandardCopyOption.REPLACE_EXISTING)
