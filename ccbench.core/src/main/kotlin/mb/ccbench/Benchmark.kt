@@ -4,14 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import mb.ccbench.format.PathDeserializer
 import mb.ccbench.format.PathSerializer
 import org.spoofax.interpreter.terms.IStrategoTerm
-import java.io.InputStream
-import java.io.OutputStream
-import java.io.Reader
-import java.io.Serializable
-import java.io.Writer
+import java.io.*
 import java.nio.file.Path
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.bufferedWriter
@@ -26,7 +21,7 @@ import kotlin.io.path.bufferedWriter
 data class Benchmark(
     val name: String,
     val testCaseDirectory: Path,
-    val testCases: List<mb.ccbench.TestCase>,
+    val testCases: List<TestCase>,
 ): Serializable {
 
     companion object {
@@ -36,8 +31,8 @@ data class Benchmark(
          * @param benchmark the benchmark to write
          * @param writer the writer to write to
          */
-        fun write(benchmark: mb.ccbench.Benchmark, writer: Writer) {
-            val mapper = mb.ccbench.Benchmark.Companion.createObjectMapper()
+        fun write(benchmark: Benchmark, writer: Writer) {
+            val mapper = createObjectMapper()
             mapper.writeValue(writer, benchmark)
         }
 
@@ -47,8 +42,8 @@ data class Benchmark(
          * @param benchmark the benchmark to write
          * @param stream the output stream to write to
          */
-        fun write(benchmark: mb.ccbench.Benchmark, stream: OutputStream) =
-            stream.bufferedWriter().use { writer -> mb.ccbench.Benchmark.Companion.write(benchmark, writer) }
+        fun write(benchmark: Benchmark, stream: OutputStream) =
+            stream.bufferedWriter().use { writer -> write(benchmark, writer) }
 
         /**
          * Writes the benchmark to the specified file.
@@ -56,8 +51,8 @@ data class Benchmark(
          * @param benchmark the benchmark to write
          * @param file the file to write to
          */
-        fun write(benchmark: mb.ccbench.Benchmark, file: Path) =
-            file.bufferedWriter().use { writer -> mb.ccbench.Benchmark.Companion.write(benchmark, writer) }
+        fun write(benchmark: Benchmark, file: Path) =
+            file.bufferedWriter().use { writer -> write(benchmark, writer) }
 
         /**
          * Reads a benchmark from the specified reader.
@@ -65,9 +60,9 @@ data class Benchmark(
          * @param reader the reader to read from
          * @return the read benchmark
          */
-        fun read(reader: Reader): mb.ccbench.Benchmark {
-            val mapper = mb.ccbench.Benchmark.Companion.createObjectMapper()
-            return mapper.readValue(reader, mb.ccbench.Benchmark::class.java)
+        fun read(reader: Reader): Benchmark {
+            val mapper = createObjectMapper()
+            return mapper.readValue(reader, Benchmark::class.java)
         }
 
         /**
@@ -76,8 +71,8 @@ data class Benchmark(
          * @param stream the input stream to read from
          * @return the read benchmark
          */
-        fun read(stream: InputStream): mb.ccbench.Benchmark =
-            stream.bufferedReader().use { reader -> mb.ccbench.Benchmark.Companion.read(reader) }
+        fun read(stream: InputStream): Benchmark =
+            stream.bufferedReader().use { reader -> read(reader) }
 
         /**
          * Reads a benchmark from the specified file.
@@ -85,8 +80,8 @@ data class Benchmark(
          * @param file the file to read from
          * @return the read benchmark
          */
-        fun read(file: Path): mb.ccbench.Benchmark =
-            file.bufferedReader().use { reader -> mb.ccbench.Benchmark.Companion.read(reader) }
+        fun read(file: Path): Benchmark =
+            file.bufferedReader().use { reader -> read(reader) }
 
         /**
          * Creates an object mapper for parsing YAML using Kotlin.

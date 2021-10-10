@@ -1,5 +1,6 @@
 package mb.ccbench.plot
 
+import org.jfree.chart.ChartUtils
 import org.jfree.chart.JFreeChart
 import org.jfree.pdf.PDFDocument
 import java.awt.Rectangle
@@ -35,5 +36,31 @@ fun JFreeChart.writeToPdf(outputStream: OutputStream, width: Int, height: Int) {
 fun JFreeChart.writeToPdf(file: Path, width: Int, height: Int) {
     file.outputStream().use { outputStream ->
         writeToPdf(outputStream, width, height)
+    }
+}
+
+/**
+ * Writes a JFreeChart to a PNG stream.
+ *
+ * The stream is not closed by this method.
+ *
+ * @param outputStream the output stream to write to
+ * @param width the width of the document
+ * @param height the height of the document
+ */
+fun JFreeChart.writeToPng(outputStream: OutputStream, width: Int, height: Int) {
+    ChartUtils.writeChartAsPNG(outputStream, this, width, height, null)
+}
+
+/**
+ * Writes a JFreeChart to a PNG file.
+ *
+ * @param file the file to write to
+ * @param width the width of the document
+ * @param height the height of the document
+ */
+fun JFreeChart.writeToPng(file: Path, width: Int, height: Int) {
+    file.outputStream().use { outputStream ->
+        writeToPng(outputStream, width, height)
     }
 }

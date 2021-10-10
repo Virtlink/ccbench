@@ -3,6 +3,8 @@ package mb.ccbench.cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.optional
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.int
@@ -12,6 +14,7 @@ import mb.ccbench.Benchmark
 import mb.ccbench.BenchmarkRunner
 import mb.ccbench.results.BenchResultSet
 import mb.ccbench.utils.withExtension
+import mu.KotlinLogging
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -28,6 +31,9 @@ abstract class RunBenchmarkCommand(
     val outputDir: Path? by option("-o", "--output", help = "Output directory").path(mustExist = false, canBeFile = false, canBeDir = true)
     val samples: Int? by option("-s", "--sample", help = "How many samples in total").int()
     val seed: Long? by option("--seed", help = "The seed").long()
+    val deterministic: Boolean by option("-d", "--deterministic", help = "Whether to run deterministic completion.").flag(default = false)
+
+    private val log = KotlinLogging.logger {}
 
     override fun run() {
         val actualProjectDir = projectDir.toAbsolutePath()
@@ -35,23 +41,23 @@ abstract class RunBenchmarkCommand(
         val actualOutputDir = (outputDir ?: Path.of("output/")).toAbsolutePath()
         val actualOutputFile = actualOutputDir.resolve(actualInputFile.withExtension(".csv").fileName).toAbsolutePath()
         val tmpProjectDir = actualOutputDir.resolve("tmp-project/").toAbsolutePath()
-        println("Project: $actualProjectDir")
-        println("Input file: $actualInputFile")
-        println("Output: $actualOutputDir")
-        println("Output file: $actualOutputFile")
-        println("Temp project dir: $tmpProjectDir")
+        log.debug("Project: $actualProjectDir")
+        log.debug("Input file: $actualInputFile")
+        log.debug("Output: $actualOutputDir")
+        log.debug("Output file: $actualOutputFile")
+        log.debug("Temp project dir: $tmpProjectDir")
 
-        val benchmark = mb.ccbench.Benchmark.read(actualInputFile)
-        val results = benchmarkRunner.run(
+        val benchmark = Benchmark.read(actualInputFile)
+        benchmarkRunner.run(
             benchmark,
             actualInputFile,
             actualProjectDir,
             tmpProjectDir,
+            actualOutputDir,
             samples,
             seed,
+            deterministic,
         )
-        Files.createDirectories(actualOutputFile.parent)
-        BenchResultSet.writeToCsv(results, actualOutputFile)
-        println("Done!")
+        log.info { "Done!" }
     }
 }

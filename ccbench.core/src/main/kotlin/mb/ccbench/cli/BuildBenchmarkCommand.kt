@@ -8,6 +8,7 @@ import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.long
 import com.github.ajalt.clikt.parameters.types.path
 import mb.ccbench.BenchmarkBuilder
+import mu.KotlinLogging
 import java.nio.file.Path
 
 /**
@@ -27,13 +28,16 @@ abstract class BuildBenchmarkCommand(
     val samples: Int? by option("-s", "--sample", help = "How many to sample per file").int()
     val seed: Long? by option("--seed", help = "The seed").long()
 
+    private val log = KotlinLogging.logger {}
+
     override fun run() {
         val actualProjectDir = projectDir.toAbsolutePath()
         val actualOutputDir = (outputDir ?: Path.of("output/")).toAbsolutePath()
         val actualTestCaseDir = (testCaseDir ?: actualOutputDir).toAbsolutePath()
-        println("Project: $actualProjectDir")
-        println("Output: $actualOutputDir")
-        println("Testcases: $actualTestCaseDir")
+        log.debug("Project: $actualProjectDir")
+        log.debug("Output: $actualOutputDir")
+        log.debug("Testcases: $actualTestCaseDir")
+
         benchmarkBuilder.build(
             name,
             actualProjectDir,
@@ -43,6 +47,6 @@ abstract class BuildBenchmarkCommand(
             samples,
             seed,
         )
-        println("Done!")
+        log.info { "Done!" }
     }
 }

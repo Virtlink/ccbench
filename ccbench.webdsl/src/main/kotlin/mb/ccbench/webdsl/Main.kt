@@ -39,7 +39,7 @@ fun main(args: Array<String>) {
         .build()
 
     // Language:
-    val languageComponent = mb.ccbench.webdsl.di.DaggerWebDSLBenchLanguageComponent.builder()
+    val languageComponent = DaggerWebDSLBenchLanguageComponent.builder()
         .webDSLModule(WebDSLModule())
         .webDSLBenchModule(WebDSLBenchModule(textResourceRegistry))
         .benchLoggerComponent(loggerComponent)
@@ -62,7 +62,7 @@ fun main(args: Array<String>) {
         languageComponent.runBenchmarkTask,
     )
 
-    val benchComponent = mb.ccbench.webdsl.di.DaggerWebDSLBenchComponent.builder()
+    val benchComponent = DaggerWebDSLBenchComponent.builder()
         .benchLoggerComponent(loggerComponent)
         .webDSLResourcesComponent(resourcesComponent)
         .benchResourceServiceComponent(resourceServiceComponent)

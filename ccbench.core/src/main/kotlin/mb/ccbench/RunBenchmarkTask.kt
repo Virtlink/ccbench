@@ -24,7 +24,6 @@ import org.spoofax.interpreter.terms.IStrategoList
 import org.spoofax.interpreter.terms.IStrategoTerm
 import org.spoofax.interpreter.terms.IStrategoTuple
 import org.spoofax.jsglr.client.imploder.ImploderAttachment
-import org.spoofax.terms.attachments.OriginAttachment
 import java.io.Serializable
 import java.nio.file.Path
 import kotlin.io.path.fileSize
@@ -38,12 +37,13 @@ abstract class RunBenchmarkTask(
 ) : TaskDef<RunBenchmarkTask.Input, BenchResult> {
 
     data class Input(
-        val benchmark: mb.ccbench.Benchmark,
+        val benchmark: Benchmark,
         val testCaseDir: Path,
         val sourceProjectDir: Path,
         val targetProjectDir: Path,
-        val testCase: mb.ccbench.TestCase,
+        val testCase: TestCase,
         val expectedTerm: ITerm,
+        val completeDeterministic: Boolean,
     ): Serializable
 
     /**
@@ -54,13 +54,14 @@ abstract class RunBenchmarkTask(
      */
     fun run(
         pie: Pie,
-        benchmark: mb.ccbench.Benchmark,
+        benchmark: Benchmark,
         testCaseDir: Path,
         sourceProjectDir: Path,
         targetProjectDir: Path,
-        testCase: mb.ccbench.TestCase,
+        testCase: TestCase,
         expectedTerm: ITerm,
         dstInputResourceKey: ResourceKey,
+        completeDeterministic: Boolean,
     ): BenchResult {
         pie.newSession().use { session ->
             val topDownSession = session.updateAffectedBy(setOf(
@@ -72,7 +73,8 @@ abstract class RunBenchmarkTask(
                 sourceProjectDir,
                 targetProjectDir,
                 testCase,
-                expectedTerm
+                expectedTerm,
+                completeDeterministic
             )))
         }
     }
@@ -107,6 +109,7 @@ abstract class RunBenchmarkTask(
                     dstInputResource.key,
                     ctx.require(input.targetProjectDir).path,
                     eventHandler,
+                    input.completeDeterministic,
                 )
             ).unwrap() as TermCodeCompletionResult
 

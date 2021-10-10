@@ -32,8 +32,8 @@ class PlotBenchmarksCommand @Inject constructor() : CliktCommand(name = "plot") 
 
         log.debug { "Plotting performance chart..." }
         val performancePdfFile = actualOutputDir.resolve("performance.pdf")
-        TimePlotter("Performance", "File size (characters)", "Total time (ms)", { it.charSize }, { it.timings.totalTime })
-            .plot(resultSets, performancePdfFile, 400, 200)
+        TimePlotter("Performance", "File size (AST nodes)", "Total time (ms)", { it.astSize }, { it.timings.totalTime })
+            .plot(resultSets, performancePdfFile, 800, 600)
         log.info { "Plotted performance chart to $performancePdfFile" }
 
         log.info { "Done!" }

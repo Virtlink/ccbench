@@ -4,9 +4,6 @@ import mb.ccbench.results.BenchResult
 import mb.ccbench.results.BenchResultSet
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.JFreeChart
-import org.jfree.chart.axis.NumberAxis
-import org.jfree.chart.plot.PlotOrientation
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer
 import org.jfree.data.xy.XYDataItem
 import org.jfree.data.xy.XYDataset
 import org.jfree.data.xy.XYSeries
@@ -28,19 +25,25 @@ class TimePlotter(
 ) : MultiResultsPlotter {
 
     override fun plotToChart(resultSets: List<BenchResultSet>): JFreeChart {
-        val dataset = buildLineChartDataset(resultSets)
+        val dataset = buildDataset(resultSets)
 
-        // create the chart...
-        val chart = ChartFactory.createXYLineChart(
+        val chart = ChartFactory.createScatterPlot(
             title,          // chart title
             xAxisLabel,     // x axis label
             yAxisLabel,     // y axis label
             dataset,        // data
-            PlotOrientation.VERTICAL,
-            true,           // include legend
-            true,           // tooltips
-            true            // urls
         )
+//        // create the chart...
+//        val chart = ChartFactory.createXYLineChart(
+//            title,          // chart title
+//            xAxisLabel,     // x axis label
+//            yAxisLabel,     // y axis label
+//            dataset,        // data
+//            PlotOrientation.VERTICAL,
+//            true,           // include legend
+//            true,           // tooltips
+//            true            // urls
+//        )
 
         // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
         chart.backgroundPaint = Color.white
@@ -56,14 +59,14 @@ class TimePlotter(
         plot.rangeGridlinePaint = Color.white
 
 
-        val renderer = XYLineAndShapeRenderer()
-        //renderer.setSeriesLinesVisible(0, false);
-        //renderer.setSeriesShapesVisible(1, false);
-        plot.renderer = renderer
-
-        // change the auto tick unit selection to integer units only...
-        val rangeAxis = plot.rangeAxis as NumberAxis
-        rangeAxis.standardTickUnits = NumberAxis.createIntegerTickUnits()
+//        val renderer = XYLineAndShapeRenderer()
+//        //renderer.setSeriesLinesVisible(0, false);
+//        //renderer.setSeriesShapesVisible(1, false);
+//        plot.renderer = renderer
+//
+//        // change the auto tick unit selection to integer units only...
+//        val rangeAxis = plot.rangeAxis as NumberAxis
+//        rangeAxis.standardTickUnits = NumberAxis.createIntegerTickUnits()
         // OPTIONAL CUSTOMISATION COMPLETED.
         return chart
     }
@@ -74,7 +77,7 @@ class TimePlotter(
      * @param resultSets the result sets
      * @return the resulting data set
      */
-    private fun buildLineChartDataset(resultSets: List<BenchResultSet>): XYDataset {
+    private fun buildDataset(resultSets: List<BenchResultSet>): XYDataset {
         val dataset = XYSeriesCollection()
         for (resultSet in resultSets){
             val series = buildXYSeries(resultSet)

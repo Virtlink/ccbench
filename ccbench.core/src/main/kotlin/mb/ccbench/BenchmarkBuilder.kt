@@ -38,7 +38,7 @@ abstract class BenchmarkBuilder(
         testCaseDir: Path,
         sample: Int?,
         seed: Long?
-    ): mb.ccbench.Benchmark {
+    ): Benchmark {
         // Ensure the output directory is empty
         FileUtils.deleteDirectory(outputDir.toFile())
         Files.createDirectories(outputDir)
@@ -63,13 +63,13 @@ abstract class BenchmarkBuilder(
         // Create and write the Benchmark object
         log.trace { "Writing benchmark file..." }
         val benchmarkFile = outputDir.resolve("$name.yml")
-        val benchmark = mb.ccbench.Benchmark(
+        val benchmark = Benchmark(
             name,
             benchmarkFile.parent.relativize(testCaseDir),
             testCases
         )
         Files.createDirectories(benchmarkFile.parent)
-        mb.ccbench.Benchmark.write(benchmark, benchmarkFile)
+        Benchmark.write(benchmark, benchmarkFile)
         log.info { "Wrote benchmark file to $benchmarkFile" }
         return benchmark
     }

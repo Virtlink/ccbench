@@ -2,6 +2,7 @@ package mb.ccbench
 
 import mb.ccbench.results.BenchResult
 import mb.ccbench.results.BenchResultSet
+import mb.ccbench.results.BenchmarkSummary
 import mb.ccbench.utils.sample
 import mb.nabl2.terms.stratego.StrategoTerms
 import mb.pie.api.Pie
@@ -27,12 +28,14 @@ abstract class BenchmarkRunner(
     private val log = KotlinLogging.logger {}
 
     fun run(
-        benchmark: mb.ccbench.Benchmark,
+        benchmark: Benchmark,
         benchmarkFile: Path,
         projectDir: Path,
         tmpProjectDir: Path,
+        outputDir: Path,
         sample: Int?,
-        seed: Long?
+        seed: Long?,
+        completeDeterministic: Boolean,
     ): BenchResultSet {
         val testCaseDir = benchmarkFile.parent.resolve(benchmark.testCaseDirectory)
 
@@ -41,7 +44,8 @@ abstract class BenchmarkRunner(
         Files.createDirectories(tmpProjectDir.parent)
         Files.copy(projectDir, tmpProjectDir)
 
-        val rnd = Random(seed ?: System.nanoTime())
+        val actualSeed = seed ?: System.nanoTime()
+        val rnd = Random(actualSeed)
 
         // Run the tests
         val results = mutableListOf<BenchResult>()
@@ -49,19 +53,40 @@ abstract class BenchmarkRunner(
         // Pick a random sample of test cases, or randomize the order
         val selectedTestCases = benchmark.testCases.sample(sample ?: benchmark.testCases.size, rnd)
         for (testCase in ProgressBar.wrap(selectedTestCases, "Tests")) {
-            val result = runTest(benchmark, testCaseDir, projectDir, tmpProjectDir, testCase)
+            val result = runTest(benchmark, testCaseDir, projectDir, tmpProjectDir, testCase, completeDeterministic)
             results.add(result)
         }
 
-        return BenchResultSet(benchmark.name, results)
+        val resultSet = BenchResultSet(benchmark.name, results)
+
+        log.trace { "Writing benchmark results..." }
+        val resultsFile = outputDir.resolve("${benchmark.name}.csv")
+        Files.createDirectories(resultsFile.parent)
+        BenchResultSet.writeToCsv(resultSet, resultsFile)
+        log.info { "Wrote benchmark results to $resultsFile" }
+
+        log.trace { "Creating benchmark summary..." }
+        val summary = BenchmarkSummary.fromResults(
+            actualSeed,
+            completeDeterministic,
+            resultSet,
+        )
+
+        log.trace { "Writing benchmark summary..." }
+        val summaryFile = outputDir.resolve("${benchmark.name}.yml")
+        Files.createDirectories(summaryFile.parent)
+        BenchmarkSummary.write(summary, summaryFile)
+        log.info { "Wrote benchmark summary to $summaryFile" }
+        return resultSet
     }
 
     fun runTest(
-        benchmark: mb.ccbench.Benchmark,
+        benchmark: Benchmark,
         testCaseDir: Path,
         srcProjectDir: Path,
         dstProjectDir: Path,
-        testCase: mb.ccbench.TestCase
+        testCase: TestCase,
+        completeDeterministic: Boolean,
     ): BenchResult {
         log.trace { "Preparing ${testCase.name}..." }
         // Copy the file to the temporary directory
@@ -74,7 +99,7 @@ abstract class BenchmarkRunner(
         val resExpectedFile = testCaseDir.resolve(testCase.expectedFile)
         val expectedTerm = StrategoTerms(termFactory).fromStratego(TAFTermReader(termFactory).readFromPath(resExpectedFile))
 
-        log.trace { "Running ${testCase.name}..." }
+        log.trace { "Running ${testCase.name} ${if (completeDeterministic) "with deterministic completion" else "no deterministic completion"}..." }
         val result = runBenchmarkTask.run(
             pie,
             benchmark,
@@ -83,7 +108,8 @@ abstract class BenchmarkRunner(
             dstProjectDir,
             testCase,
             expectedTerm,
-            FSResource(dstInputFile).key
+            FSResource(dstInputFile).key,
+            completeDeterministic,
         )
         log.info { "${testCase.name}: ${result.kind} (${result.timings.totalTime} ms)"}
         // Restore the file

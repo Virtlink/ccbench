@@ -48,7 +48,7 @@ abstract class BuildBenchmarkTask(
     private val textResourceRegistry: TextResourceRegistry,
     private val termFactory: ITermFactory,
     private val termWriter: SimpleTextTermWriter,
-) : TaskDef<BuildBenchmarkTask.Input, ListView<mb.ccbench.TestCase>> {
+) : TaskDef<BuildBenchmarkTask.Input, ListView<TestCase>> {
 
     /**
      * The input arguments for the task.
@@ -73,7 +73,7 @@ abstract class BuildBenchmarkTask(
      * @param inputFile the task input file
      * @return the benchmark
      */
-    fun run(pie: Pie, projectDir: Path, inputFile: Path, testCaseDir: Path, sample: Int?, rnd: Random): List<mb.ccbench.TestCase> {
+    fun run(pie: Pie, projectDir: Path, inputFile: Path, testCaseDir: Path, sample: Int?, rnd: Random): List<TestCase> {
         pie.newSession().use { session ->
             val topDownSession = session.updateAffectedBy(emptySet())
             return try {
@@ -87,7 +87,7 @@ abstract class BuildBenchmarkTask(
 
     override fun getId(): String = BuildBenchmarkTask::class.java.name
 
-    override fun exec(ctx: ExecContext, input: Input): ListView<mb.ccbench.TestCase> {
+    override fun exec(ctx: ExecContext, input: Input): ListView<TestCase> {
         val originalName = input.inputFile.withExtension("").toString()
         val resInputFile = input.projectDir.resolve(input.inputFile)
         val projectDirResource = ctx.require(input.projectDir)
@@ -144,7 +144,7 @@ abstract class BuildBenchmarkTask(
         } }
 
         // Construct test cases and write the files to the test cases directory
-        val testCases = mutableListOf<mb.ccbench.TestCase>()
+        val testCases = mutableListOf<TestCase>()
         Files.createDirectories(input.testCaseDir.resolve(input.inputFile).parent)
         val indexedAsts = prettyPrintedAsts.withIndex()
         val sampledAsts = input.sample?.let { indexedAsts.sample(it, input.rnd) } ?: indexedAsts
@@ -171,7 +171,7 @@ abstract class BuildBenchmarkTask(
 
             // Add the test case
             testCases.add(
-                mb.ccbench.TestCase(
+                TestCase(
                     name,
                     input.inputFile,
                     input.testCaseDir.relativize(outputFile),
