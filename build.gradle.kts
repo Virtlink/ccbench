@@ -5,43 +5,6 @@ plugins {
     kotlin("plugin.serialization") version "1.5.21"
 }
 
-//val metaborgCoreVersion = "cc2109-SNAPSHOT"
-//val metaborgSpoofaxTermsVersion = "spoofax3-SNAPSHOT"
-//val metaborgLogVersion = "develop-SNAPSHOT"
-//val metaborgPieVersion = "develop-SNAPSHOT"
-//val metaborgResourceVersion = "develop-SNAPSHOT"
-//val metaborgNabl2TermsVersion = "spoofax3-SNAPSHOT"
-//val metaborgStatixSolverVersion = "spoofax3-SNAPSHOT"
-//val metaborgStatixGeneratorVersion = "spoofax3-SNAPSHOT"
-val slf4jVersion = "1.7.30"
-val logbackVersion = "1.2.6"
-val microutilsLoggingVersion = "2.0.11"
-val daggerVersion = "2.36"
-val progressbarVersion = "0.9.2"
-val cliktVersion = "3.2.0"
-val commonsCsvVersion = "1.9.0"
-val jacksonVersion = "2.13.0"
-val jfreechartVersion = "1.5.3"
-val jfreePdfVersion = "2.0"
-val commonsIoVersion = "2.8.0"
-val commonsMathVersion = "3.6.1"
-val junitVersion = "5.8.1"
-
-// Metaborg
-//val spoofax3CoreVersion = "cc2109-SNAPSHOT"
-//val commonVersion = "cc2109-SNAPSHOT"
-//val logVersion = "develop-SNAPSHOT"
-//val resourceVersion = "develop-SNAPSHOT"
-//val pieVersion = "develop-SNAPSHOT"
-//val spoofax2DevenvVersion = "spoofax3-SNAPSHOT"
-//
-//val spoofax3CoreVersion = "latest.integration"
-//val commonVersion = "latest.integration"
-//val logVersion = "latest.integration"
-//val resourceVersion = "latest.integration"
-//val pieVersion = "latest.integration"
-//val spoofax2DevenvVersion = "latest.integration"
-
 allprojects {
     group = "mb.ccbench"
     version = "1.0-SNAPSHOT"
@@ -88,38 +51,38 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
         implementation("org.metaborg:resource")
 
         // Logging
-        implementation("ch.qos.logback:logback-classic:$logbackVersion")
-        implementation("ch.qos.logback:logback-core:$logbackVersion")
-        implementation("io.github.microutils:kotlin-logging-jvm:$microutilsLoggingVersion")
+        implementation("ch.qos.logback:logback-classic")
+        implementation("ch.qos.logback:logback-core")
+        implementation("io.github.microutils:kotlin-logging-jvm")
 
         // Dependency Injection
-        implementation("com.google.dagger:dagger:$daggerVersion")
-        implementation("com.google.dagger:dagger-compiler:$daggerVersion")
-        kapt("com.google.dagger:dagger-compiler:$daggerVersion")
+        implementation("com.google.dagger:dagger")
+        implementation("com.google.dagger:dagger-compiler")
+        kapt("com.google.dagger:dagger-compiler")
 
         // CLI
-        implementation("me.tongfei:progressbar:$progressbarVersion")
-        implementation("com.github.ajalt.clikt:clikt:$cliktVersion")
+        implementation("me.tongfei:progressbar")
+        implementation("com.github.ajalt.clikt:clikt")
 
         // CSV
-        implementation("org.apache.commons:commons-csv:$commonsCsvVersion")
+        implementation("org.apache.commons:commons-csv")
 
         // YAML
-        implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+        implementation("com.fasterxml.jackson.core:jackson-databind")
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
         // Charts
-        implementation("org.jfree:jfreechart:$jfreechartVersion")
-        implementation("org.jfree:org.jfree.pdf:$jfreePdfVersion")
+        implementation("org.jfree:jfreechart")
+        implementation("org.jfree:org.jfree.pdf")
 
         // Utils
-        implementation("commons-io:commons-io:$commonsIoVersion")
-        implementation("org.apache.commons:commons-math3:$commonsMathVersion")
+        implementation("commons-io:commons-io")
+        implementation("org.apache.commons:commons-math3")
 
         // Testing
-        testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-        testRuntimeOnly   ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+        testImplementation("org.junit.jupiter:junit-jupiter-api")
+        testRuntimeOnly   ("org.junit.jupiter:junit-jupiter-engine")
     }
 
     tasks.getByName<Test>("test") {
