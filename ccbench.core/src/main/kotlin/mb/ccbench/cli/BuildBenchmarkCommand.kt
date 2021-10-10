@@ -18,7 +18,7 @@ import java.nio.file.Path
 abstract class BuildBenchmarkCommand(
     private val ext: String,
     private val benchmarkBuilder: BenchmarkBuilder,
-) : CliktCommand(name = "prepare") {
+) : CliktCommand(name = "build") {
     val name: String by argument(help = "Name of the benchmark")
 
     val projectDir: Path by option("-p", "--project", help = "Project directory").path(mustExist = true, canBeFile = false, canBeDir = true).required()

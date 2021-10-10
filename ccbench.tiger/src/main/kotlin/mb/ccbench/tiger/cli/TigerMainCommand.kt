@@ -4,9 +4,9 @@ import mb.ccbench.cli.MainCommand
 import javax.inject.Inject
 
 class TigerMainCommand @Inject constructor(
-    prepareBenchmarkCommand: TigerBuildBenchmarkCommand,
+    buildBenchmarkCommand: TigerBuildBenchmarkCommand,
     runBenchmarkCommand: TigerRunBenchmarkCommand,
 ): MainCommand(
-    prepareBenchmarkCommand,
+    buildBenchmarkCommand,
     runBenchmarkCommand,
 )
