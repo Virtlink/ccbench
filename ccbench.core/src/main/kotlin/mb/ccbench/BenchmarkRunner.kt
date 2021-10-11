@@ -15,6 +15,9 @@ import org.spoofax.terms.io.TAFTermReader
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -59,8 +62,10 @@ abstract class BenchmarkRunner(
 
         val resultSet = BenchResultSet(benchmark.name, results)
 
+        val dateString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+
         log.trace { "Writing benchmark results..." }
-        val resultsFile = outputDir.resolve("${benchmark.name}.csv")
+        val resultsFile = outputDir.resolve("$dateString-${benchmark.name}.csv")
         Files.createDirectories(resultsFile.parent)
         BenchResultSet.writeToCsv(resultSet, resultsFile)
         log.info { "Wrote benchmark results to $resultsFile" }
@@ -73,7 +78,7 @@ abstract class BenchmarkRunner(
         )
 
         log.trace { "Writing benchmark summary..." }
-        val summaryFile = outputDir.resolve("${benchmark.name}.yml")
+        val summaryFile = outputDir.resolve("$dateString-${benchmark.name}.yml")
         Files.createDirectories(summaryFile.parent)
         BenchmarkSummary.write(summary, summaryFile)
         log.info { "Wrote benchmark summary to $summaryFile" }
