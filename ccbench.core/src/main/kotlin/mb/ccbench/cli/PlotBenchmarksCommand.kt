@@ -8,6 +8,7 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.path
 import mb.ccbench.plot.TimePlotter
 import mb.ccbench.results.BenchResultSet
+import mb.ccbench.utils.withExtension
 import mu.KotlinLogging
 import java.nio.file.Path
 import javax.inject.Inject
@@ -16,23 +17,21 @@ import javax.inject.Inject
  * Plots benchmarks.
  */
 class PlotBenchmarksCommand @Inject constructor() : CliktCommand(name = "plot") {
-    val name: String by argument(help = "Name of the benchmark")
-
     val inputFiles: List<Path> by option("-i", "--input", help = "Benchmark CSV results").path(mustExist = true, canBeFile = true, canBeDir = false).multiple(required = true)
-    val outputDir: Path by option("-o", "--output", help = "Output directory").path(mustExist = false, canBeFile = false, canBeDir = true).required()
+    val outputFile: Path by option("-o", "--output", help = "Output directory").path(mustExist = false, canBeFile = true, canBeDir = false).required()
 
     private val log = KotlinLogging.logger {}
 
     override fun run() {
-        val actualOutputDir = outputDir.toAbsolutePath()
+        val actualOutputFile = outputFile.toAbsolutePath()
 
         log.debug { "Reading result sets..."}
-        val resultSets = inputFiles.map { BenchResultSet.readFromCsv(name, it.toAbsolutePath()) }
+        val resultSets = inputFiles.map { BenchResultSet.readFromCsv(it.fileName.withExtension("").toString(), it.toAbsolutePath()) }
         log.info { "Read ${resultSets.size} result sets."}
 
         log.debug { "Plotting performance chart..." }
-        val performancePdfFile = actualOutputDir.resolve("performance.pdf")
-        val performancePngFile = actualOutputDir.resolve("performance.png")
+        val performancePdfFile = actualOutputFile.withExtension(".pdf")
+        val performancePngFile = actualOutputFile.withExtension(".png")
         TimePlotter("Performance", "File size (AST nodes)", "Total time (ms)", { it.astSize }, { it.timings.totalTime })
             .plot(resultSets, performancePdfFile, performancePngFile, 800, 600)
         log.info { "Plotted performance chart PDF to $performancePdfFile" }
