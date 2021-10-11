@@ -27,6 +27,7 @@ import org.spoofax.interpreter.terms.IStrategoTuple
 import org.spoofax.jsglr.client.imploder.ImploderAttachment
 import java.io.Serializable
 import java.nio.file.Path
+import kotlin.io.path.bufferedReader
 import kotlin.io.path.fileSize
 
 /**
@@ -94,6 +95,7 @@ abstract class RunBenchmarkTask(
         var kind: BenchResultKind
         var charSize: Long = -1
         var tokenSize: Long = -1
+        var lineSize: Long = -1
         var astSize: Long = -1
         var results: TermCodeCompletionResult? = null
         val eventHandler = MeasuringCodeCompletionEventHandler()
@@ -103,6 +105,7 @@ abstract class RunBenchmarkTask(
             // We parse the input resource here, such that we don't measure the overhead of parsing the input resource again
             val dstInputResource = ctx.require(dstInputFile)
             charSize = dstInputFile.fileSize()  // Assumes UTF-8
+            lineSize = dstInputFile.bufferedReader().lineSequence().count().toLong()
             val ast = parseTask.runParse(ctx, dstInputResource.key)
             tokenSize = ImploderAttachment.getTokenizer(ast).tokenCount.toLong()
             astSize = computeTermSize(ast)
