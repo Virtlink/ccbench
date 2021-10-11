@@ -56,6 +56,9 @@ abstract class BenchmarkRunner(
 
         // Pick a random sample of test cases, or randomize the order
         val selectedTestCases = benchmark.testCases.sample(sample ?: benchmark.testCases.size, rnd)
+        if (selectedTestCases.isEmpty()) {
+            log.warn { "No tests will be run!" }
+        }
         for (testCase in ProgressBar.wrap(selectedTestCases, "Tests")) {
             val result = runTest(benchmark, testCaseDir, projectDir, tmpProjectDir, testCase, completeDeterministic)
             results.add(result)

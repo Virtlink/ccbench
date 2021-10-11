@@ -50,6 +50,10 @@ abstract class BenchmarkBuilder(
             .map { projectDir.relativize(it) }
             .toList()
 
+        if (inputFiles.isEmpty()) {
+            log.warn { "No input files found!" }
+        }
+
         val rnd = Random(seed ?: System.nanoTime())
 
         // Create and write the test cases
@@ -60,8 +64,12 @@ abstract class BenchmarkBuilder(
             result
         }
 
+        if (testCases.isEmpty()) {
+            log.warn { "No tests found!" }
+        }
+
         // Create and write the Benchmark object
-        log.trace { "Writing benchmark file..." }
+        log.trace { "Writing test file..." }
         val benchmarkFile = outputDir.resolve("$name.yml")
         val benchmark = Benchmark(
             name,
@@ -70,7 +78,7 @@ abstract class BenchmarkBuilder(
         )
         Files.createDirectories(benchmarkFile.parent)
         Benchmark.write(benchmark, benchmarkFile)
-        log.info { "Wrote benchmark file to $benchmarkFile" }
+        log.info { "Wrote test file to $benchmarkFile" }
         return benchmark
     }
 
