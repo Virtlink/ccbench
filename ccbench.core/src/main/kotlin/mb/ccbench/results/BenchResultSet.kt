@@ -154,7 +154,7 @@ data class BenchResult(
     val originalFile: Path,
     val kind: BenchResultKind,
     val charSize: Long,
-//    val lineSize: Long,
+    val lineSize: Long,
     val tokenSize: Long,
     val astSize: Long,
     val proposalCount: Int,
@@ -171,7 +171,7 @@ data class BenchResult(
             "OriginalFile",
             "Kind",
             "CharSize",
-//            "LineSize",
+            "LineSize",
             "TokenSize",
             "ASTSize",
             "NumberOfResults"
@@ -188,7 +188,7 @@ data class BenchResult(
             obj.originalFile.toString(),
             obj.kind.toString(),
             obj.charSize.toString(),
-//            obj.lineSize.toString(),
+            obj.lineSize.toString(),
             obj.tokenSize.toString(),
             obj.astSize.toString(),
             obj.proposalCount.toString(),
@@ -204,12 +204,12 @@ data class BenchResult(
             values[offset + 0],
             Path.of(values[offset + 1]),
             BenchResultKind.valueOf(values[offset + 2]),
-            values[offset + 3].toLong(),
-//            values[offset + 4].toLong(),
-            values[offset + 4].toLong(),
-            values[offset + 5].toLong(),
-            values[offset + 6].toInt(),
-            Timings.fromCsvRecord(values, 7)
+            values[offset + 3].takeIf { it.isNotBlank() }?.toLong() ?: 0,
+            values[offset + 4].takeIf { it.isNotBlank() }?.toLong() ?: 0,
+            values[offset + 5].takeIf { it.isNotBlank() }?.toLong() ?: 0,
+            values[offset + 6].takeIf { it.isNotBlank() }?.toLong() ?: 0,
+            values[offset + 7].takeIf { it.isNotBlank() }?.toInt() ?: 0,
+            Timings.fromCsvRecord(values, 8)
         )
     }
 }

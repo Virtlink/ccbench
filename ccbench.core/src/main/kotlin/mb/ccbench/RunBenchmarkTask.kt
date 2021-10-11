@@ -154,6 +154,7 @@ abstract class RunBenchmarkTask(
             input.testCase.file,
             kind,
             charSize,
+            lineSize,
             tokenSize,
             astSize,
             results?.proposals?.size() ?: 0,
