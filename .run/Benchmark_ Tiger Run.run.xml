@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Benchmark: Tiger Run (100)" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="Benchmark: Tiger Run (100)" type="GradleRunConfiguration" factoryName="Gradle" folderName="Tiger">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value=":ccbench.tiger:run --args=&quot;run Tiger -p $PROJECT_DIR$/../../tiger/tiger-benchmark/ -i $PROJECT_DIR$/../../tiger/tiger-tests/Tiger.yml -o $PROJECT_DIR$/../../tiger/tiger-results/ --seed 12345 -s 100 -d&quot;" />
+      <option name="scriptParameters" value=":ccbench.tiger:run --args=&quot;run tiger-laptop -p $PROJECT_DIR$/../../tiger/tiger-benchmark/ -i $PROJECT_DIR$/../../tiger/tiger-tests/Tiger.yml -o $PROJECT_DIR$/../../tiger/tiger-results/ --seed 12345 -s 100&quot;" />
       <option name="taskDescriptions">
         <list />
       </option>

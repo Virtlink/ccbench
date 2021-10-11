@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Benchmark: Tiger Build" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="Benchmark: Tiger Build" type="GradleRunConfiguration" factoryName="Gradle" folderName="Tiger">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
