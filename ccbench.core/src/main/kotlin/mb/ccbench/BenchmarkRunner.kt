@@ -7,6 +7,8 @@ import mb.ccbench.utils.sample
 import mb.nabl2.terms.stratego.StrategoTerms
 import mb.pie.api.Pie
 import mb.resource.fs.FSResource
+import mb.tego.strategies.runtime.MeasuringTegoRuntime
+import mb.tego.strategies.runtime.TegoRuntime
 import me.tongfei.progressbar.ProgressBar
 import mu.KotlinLogging
 import org.apache.commons.io.FileUtils
@@ -27,6 +29,7 @@ abstract class BenchmarkRunner(
     private val pie: Pie,
     private val runBenchmarkTask: RunBenchmarkTask,
     private val termFactory: ITermFactory,
+    private val tegoRuntime: TegoRuntime,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -53,6 +56,10 @@ abstract class BenchmarkRunner(
 
         // Run the tests
         val results = mutableListOf<BenchResult>()
+
+        if (tegoRuntime is MeasuringTegoRuntime) {
+            log.warn { "Measuring Tego runtime." }
+        }
 
         // Pick a random sample of test cases, or randomize the order
         val selectedTestCases = benchmark.testCases.sample(sample ?: benchmark.testCases.size, rnd)
@@ -86,6 +93,8 @@ abstract class BenchmarkRunner(
         Files.createDirectories(summaryFile.parent)
         BenchmarkSummary.write(summary, summaryFile)
         log.info { "Wrote benchmark summary to $summaryFile" }
+
+
         return resultSet
     }
 
