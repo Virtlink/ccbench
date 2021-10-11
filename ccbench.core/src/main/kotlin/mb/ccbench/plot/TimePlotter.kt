@@ -4,11 +4,17 @@ import mb.ccbench.results.BenchResult
 import mb.ccbench.results.BenchResultSet
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.JFreeChart
+import org.jfree.chart.axis.NumberAxis
+import org.jfree.chart.plot.XYPlot
+import org.jfree.chart.util.ShapeUtils
 import org.jfree.data.xy.XYDataItem
 import org.jfree.data.xy.XYDataset
 import org.jfree.data.xy.XYSeries
 import org.jfree.data.xy.XYSeriesCollection
 import java.awt.Color
+import java.awt.Shape
+import java.awt.geom.Ellipse2D
+
 
 /**
  * Plots the result sets as a chart with the given time,
@@ -33,26 +39,13 @@ class TimePlotter(
             yAxisLabel,     // y axis label
             dataset,        // data
         )
-//        // create the chart...
-//        val chart = ChartFactory.createXYLineChart(
-//            title,          // chart title
-//            xAxisLabel,     // x axis label
-//            yAxisLabel,     // y axis label
-//            dataset,        // data
-//            PlotOrientation.VERTICAL,
-//            true,           // include legend
-//            true,           // tooltips
-//            true            // urls
-//        )
 
         // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
         chart.backgroundPaint = Color.white
 
-//        final StandardLegend legend = (StandardLegend) chart.getLegend();
-        //      legend.setDisplaySeriesShapes(true);
-
-        // get a reference to the plot for further customisation...
         val plot = chart.xyPlot
+        val renderer = plot.renderer
+        renderer.setSeriesShape(0, Ellipse2D.Double(0.0, 0.0, 1.0, 1.0))
         plot.backgroundPaint = Color.lightGray
         //    plot.setAxisOffset(new Spacer(Spacer.ABSOLUTE, 5.0, 5.0, 5.0, 5.0));
         plot.domainGridlinePaint = Color.white
@@ -63,11 +56,11 @@ class TimePlotter(
 //        //renderer.setSeriesLinesVisible(0, false);
 //        //renderer.setSeriesShapesVisible(1, false);
 //        plot.renderer = renderer
-//
-//        // change the auto tick unit selection to integer units only...
-//        val rangeAxis = plot.rangeAxis as NumberAxis
-//        rangeAxis.standardTickUnits = NumberAxis.createIntegerTickUnits()
-        // OPTIONAL CUSTOMISATION COMPLETED.
+
+        // change the auto tick unit selection to integer units only...
+        val rangeAxis = plot.rangeAxis as NumberAxis
+        rangeAxis.standardTickUnits = NumberAxis.createIntegerTickUnits()
+
         return chart
     }
 
