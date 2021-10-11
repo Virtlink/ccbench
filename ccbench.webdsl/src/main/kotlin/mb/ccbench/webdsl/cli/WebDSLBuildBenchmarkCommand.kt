@@ -7,6 +7,6 @@ import javax.inject.Inject
 class WebDSLBuildBenchmarkCommand @Inject constructor(
     benchmarkBuilder: WebDSLBenchmarkBuilder
 ) : BuildBenchmarkCommand(
-    "app",
+    ".app",
     benchmarkBuilder
 )
