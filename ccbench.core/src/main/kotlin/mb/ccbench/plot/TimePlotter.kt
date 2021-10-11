@@ -45,7 +45,9 @@ class TimePlotter(
 
         val plot = chart.xyPlot
         val renderer = plot.renderer
-        renderer.setSeriesShape(0, Ellipse2D.Double(0.0, 0.0, 1.0, 1.0))
+        for (i in 0 until dataset.seriesCount) {
+            renderer.setSeriesShape(i, Ellipse2D.Double(0.0, 0.0, 2.0, 2.0))
+        }
         plot.backgroundPaint = Color.lightGray
         //    plot.setAxisOffset(new Spacer(Spacer.ABSOLUTE, 5.0, 5.0, 5.0, 5.0));
         plot.domainGridlinePaint = Color.white
