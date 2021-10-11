@@ -144,6 +144,7 @@ abstract class RunBenchmarkTask(
 
         return BenchResult(
             input.testCase.name,
+            input.testCase.file,
             kind,
             charSize,
             tokenSize,

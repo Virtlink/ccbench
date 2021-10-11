@@ -141,6 +141,7 @@ data class BenchResultSet(
  * A single benchmark result.
  *
  * @property name The name of the benchmark test.
+ * @property originalFile The original file being benchmarked.
  * @property kind The result of the benchmark.
  * @property charSize The size of the input file, in characters.
  * @property tokenSize The size of the input file, in tokens.
@@ -150,6 +151,7 @@ data class BenchResultSet(
  */
 data class BenchResult(
     val name: String,
+    val originalFile: Path,
     val kind: BenchResultKind,
     val charSize: Long,
     val tokenSize: Long,
@@ -165,6 +167,7 @@ data class BenchResult(
         /** The CSV headers. */
         val csvHeaders = listOf(
             "Name",
+            "OriginalFile",
             "Kind",
             "CharSize",
             "TokenSize",
@@ -180,6 +183,7 @@ data class BenchResult(
          */
         fun toCsvRecord(obj: BenchResult): List<String> = listOf(
             obj.name,
+            obj.originalFile.toString(),
             obj.kind.toString(),
             obj.charSize.toString(),
             obj.tokenSize.toString(),
@@ -195,12 +199,13 @@ data class BenchResult(
          */
         fun fromCsvRecord(values: List<String>, offset: Int = 0): BenchResult = BenchResult(
             values[offset + 0],
-            BenchResultKind.valueOf(values[offset + 1]),
-            values[offset + 2].toLong(),
+            Path.of(values[offset + 1]),
+            BenchResultKind.valueOf(values[offset + 2]),
             values[offset + 3].toLong(),
             values[offset + 4].toLong(),
-            values[offset + 5].toInt(),
-            Timings.fromCsvRecord(values, 6)
+            values[offset + 5].toLong(),
+            values[offset + 6].toInt(),
+            Timings.fromCsvRecord(values, 7)
         )
     }
 }
