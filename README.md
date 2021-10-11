@@ -72,6 +72,25 @@ git clone --depth 1 git@github.com:MetaBorgCube/metaborg-tiger.git tiger
 scp w2018:tiger-output/Tiger.csv Tiger.csv
 ```
 
+## How to make a language ready for code completion?
+
+- Add rules matching explicit placeholders
+
+    ```
+    rules
+      typeOfExp(_, Exp-Plhdr()) = _.
+    ```
+    
+- Do *not* add catch-all rules. The following rules interfere with code completion:
+
+    ```
+    typeOfExp(_, _) = UNDEFINED() :- try { false } | warning $[This is not yet implemented]. 
+    ```
+
+  (This is what happens in WebDSL Statix spec.)
+
+
+
 
 
 [1]: git@github.com:metaborg/devenv.git
