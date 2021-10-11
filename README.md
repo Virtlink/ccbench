@@ -40,6 +40,8 @@ rsync -av ./tiger-benchmark/ w2018:tiger-benchmark/
 # - in the directory where the test files where generated
 rsync -av ./tiger-tests/ w2018:tiger-tests/
 
+# On webdsl-2018:
+
 # (Optionally) build tests
 # - in the ccbench source directory
 ./ccbench.tiger/bin/ccbench.tiger \
@@ -50,7 +52,7 @@ rsync -av ./tiger-tests/ w2018:tiger-tests/
 # Run tests
 # - in the ccbench source directory
 ./ccbench.tiger/bin/ccbench.tiger \
-  run Tiger \
+  run tiger-w2018 \
   -p tiger-benchmark/ \
   -i tiger-tests/Tiger.yml \
   -o tiger-results/ \
