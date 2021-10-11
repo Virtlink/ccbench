@@ -31,6 +31,7 @@ abstract class BenchmarkRunner(
     private val log = KotlinLogging.logger {}
 
     fun run(
+        name: String,
         benchmark: Benchmark,
         benchmarkFile: Path,
         projectDir: Path,
@@ -60,12 +61,12 @@ abstract class BenchmarkRunner(
             results.add(result)
         }
 
-        val resultSet = BenchResultSet(benchmark.name, results)
+        val resultSet = BenchResultSet(name, results)
 
         val dateString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 
         log.trace { "Writing benchmark results..." }
-        val resultsFile = outputDir.resolve("$dateString-${benchmark.name}.csv")
+        val resultsFile = outputDir.resolve("$dateString-$name.csv")
         Files.createDirectories(resultsFile.parent)
         BenchResultSet.writeToCsv(resultSet, resultsFile)
         log.info { "Wrote benchmark results to $resultsFile" }
@@ -78,7 +79,7 @@ abstract class BenchmarkRunner(
         )
 
         log.trace { "Writing benchmark summary..." }
-        val summaryFile = outputDir.resolve("$dateString-${benchmark.name}.yml")
+        val summaryFile = outputDir.resolve("$dateString-$name.yml")
         Files.createDirectories(summaryFile.parent)
         BenchmarkSummary.write(summary, summaryFile)
         log.info { "Wrote benchmark summary to $summaryFile" }

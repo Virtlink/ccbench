@@ -49,6 +49,7 @@ abstract class RunBenchmarkCommand(
 
         val benchmark = Benchmark.read(actualInputFile)
         benchmarkRunner.run(
+            name ?: benchmark.name,
             benchmark,
             actualInputFile,
             actualProjectDir,

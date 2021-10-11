@@ -6,6 +6,7 @@ import mb.ccbench.results.Timings
 import mb.ccbench.utils.runParse
 import mb.common.region.Region
 import mb.jsglr.pie.JsglrParseTaskDef
+import mb.nabl2.terms.IStringTerm
 import mb.nabl2.terms.ITerm
 import mb.nabl2.terms.ITermVar
 import mb.nabl2.terms.matching.TermPattern
@@ -115,13 +116,18 @@ abstract class RunBenchmarkTask(
 
             kind = if (!results.proposals.isEmpty) {
                 val extProposals = results.proposals.filterIsInstance<TermCodeCompletionItem>()
-                val success = extProposals.filter { tryMatchExpectation(results.placeholder, input.expectedTerm, it.term) }.isNotEmpty()
+                val success =
+                    extProposals.filter { tryMatchExpectation(results.placeholder, input.expectedTerm, it.term) }
+                        .isNotEmpty()
                 if (success) {
                     BenchResultKind.Success
                 } else {
                     log.warn { "Expected: ${input.expectedTerm}, got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
                     BenchResultKind.Failed
                 }
+            } else if (input.expectedTerm is IStringTerm) {
+                log.info { "Expected literal: ${input.expectedTerm}, got: <nothing>" }
+                BenchResultKind.Literal
             } else {
                 log.warn { "Expected: ${input.expectedTerm}, got: <nothing>" }
                 BenchResultKind.NoResults

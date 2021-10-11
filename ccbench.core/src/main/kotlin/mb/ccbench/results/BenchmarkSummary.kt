@@ -24,6 +24,7 @@ data class BenchmarkSummary(
 
     val totalTests: Int,
     val successTests: Int,
+    val literalTests: Int,
     val failedTests: Int,
     val errorTests: Int,
     val noResultsTests: Int,
@@ -107,6 +108,7 @@ data class BenchmarkSummary(
                 deterministicCompletion,
                 results.results.size,
                 successResults.size,
+                results.results.count { it.kind == BenchResultKind.Literal },
                 results.results.count { it.kind == BenchResultKind.Failed },
                 results.results.count { it.kind == BenchResultKind.Error },
                 results.results.count { it.kind == BenchResultKind.NoResults },
