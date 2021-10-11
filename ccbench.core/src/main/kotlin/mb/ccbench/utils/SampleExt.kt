@@ -16,9 +16,9 @@ fun <T> Iterable<T>.sample(number: Int, rnd: Random): List<T> {
     val input = this.toMutableList()
     val picked = mutableListOf<T>()
     for (i in 0 until number) {
+        if (input.isEmpty()) break
         val pick = input.removeAt(rnd.nextInt(input.size))
         picked.add(pick)
-        if (input.isEmpty()) break
     }
     return picked
 }
