@@ -90,20 +90,24 @@ abstract class RunBenchmarkTask(
     override fun getId(): String = RunBenchmarkTask::class.java.name
 
     override fun exec(ctx: ExecContext, input: Input): BenchResult {
-        val dstInputFile = input.targetProjectDir.resolve(input.testCase.file)
 
-        // We parse the input resource here, such that we don't measure the overhead of parsing the input resource again
-        val dstInputResource = ctx.require(dstInputFile)
-        val charSize = dstInputFile.fileSize()  // Assumes UTF-8
-        val ast = parseTask.runParse(ctx, dstInputResource.key)
-        val tokenSize = ImploderAttachment.getTokenizer(ast).tokenCount.toLong()
-        val astSize = computeTermSize(ast)
-
-        // Execute code completion
         var kind: BenchResultKind
-        val eventHandler = MeasuringCodeCompletionEventHandler()
+        var charSize: Long = -1
+        var tokenSize: Long = -1
+        var astSize: Long = -1
         var results: TermCodeCompletionResult? = null
+        val eventHandler = MeasuringCodeCompletionEventHandler()
         try {
+            val dstInputFile = input.targetProjectDir.resolve(input.testCase.file)
+
+            // We parse the input resource here, such that we don't measure the overhead of parsing the input resource again
+            val dstInputResource = ctx.require(dstInputFile)
+            charSize = dstInputFile.fileSize()  // Assumes UTF-8
+            val ast = parseTask.runParse(ctx, dstInputResource.key)
+            tokenSize = ImploderAttachment.getTokenizer(ast).tokenCount.toLong()
+            astSize = computeTermSize(ast)
+
+            // Execute code completion
             results = ctx.require(
                 codeCompletionTask, CodeCompletionTaskDef.Input(
                     Region.atOffset(input.testCase.placeholderOffset),

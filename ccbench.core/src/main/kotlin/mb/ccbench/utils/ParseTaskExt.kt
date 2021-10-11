@@ -15,11 +15,15 @@ import kotlin.streams.asSequence
  * @return the ATerm
  */
 fun JsglrParseTaskDef.runParse(ctx: ExecContext, resourceKey: ResourceKey): IStrategoTerm {
-    val jsglrResult = ctx.require(this, JsglrParseTaskInput.builder()
-        .withFile(resourceKey)
-        .build()
+    val jsglrResult = ctx.require(
+        this, JsglrParseTaskInput.builder()
+            .withFile(resourceKey)
+            .build()
     ).unwrap()
-    check(!jsglrResult.ambiguous) { "${resourceKey}: Parse result is ambiguous."}
-    check(!jsglrResult.messages.containsErrorOrHigher()) { "${resourceKey}: Parse result has errors: ${jsglrResult.messages.stream().asSequence().joinToString { "${it.region}: ${it.text}" }}"}
+    check(!jsglrResult.ambiguous) { "${resourceKey}: Parse result is ambiguous." }
+    check(!jsglrResult.messages.containsErrorOrHigher()) {
+        "${resourceKey}: Parse result has errors: " +
+                jsglrResult.messages.stream().asSequence().joinToString { "${it.region}: ${it.text}" }
+    }
     return jsglrResult.ast
 }
