@@ -7,6 +7,7 @@ import mb.ccbench.di.BenchPlatformComponent
 import mb.ccbench.di.BenchResourceServiceComponent
 import mb.ccbench.di.BenchScope
 import mb.pie.dagger.RootPieComponent
+import mb.tego.strategies.TegoComponent
 import mb.tiger.TigerResourcesComponent
 
 @BenchScope
@@ -17,6 +18,7 @@ import mb.tiger.TigerResourcesComponent
     BenchPlatformComponent::class,
     TigerBenchLanguageComponent::class,
     RootPieComponent::class,
+    TegoComponent::class,
 ])
 interface TigerBenchComponent {
     val mainCommand: TigerMainCommand

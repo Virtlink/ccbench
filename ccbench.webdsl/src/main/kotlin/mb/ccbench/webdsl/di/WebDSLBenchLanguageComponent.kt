@@ -6,6 +6,7 @@ import mb.ccbench.di.BenchPlatformComponent
 import mb.ccbench.webdsl.WebDSLBuildBenchmarkTask
 import mb.ccbench.webdsl.WebDSLRunBenchmarkTask
 import mb.resource.dagger.ResourceServiceComponent
+import mb.tego.strategies.TegoComponent
 import mb.webdsl.WebDSLComponent
 import mb.webdsl.WebDSLModule
 import mb.webdsl.WebDSLResourcesComponent
@@ -23,6 +24,7 @@ import org.spoofax.interpreter.terms.ITermFactory
         WebDSLResourcesComponent::class,
         ResourceServiceComponent::class,
         BenchPlatformComponent::class,
+        TegoComponent::class,
     ]
 )
 interface WebDSLBenchLanguageComponent: WebDSLComponent {

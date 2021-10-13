@@ -10,6 +10,7 @@ import mb.pie.dagger.RootPieModule
 import mb.pie.runtime.PieBuilderImpl
 import mb.resource.dagger.RootResourceServiceModule
 import mb.resource.text.TextResourceRegistry
+import mb.tego.strategies.DaggerTegoComponent
 import mb.tiger.DaggerTigerResourcesComponent
 import mb.tiger.TigerModule
 
@@ -36,6 +37,10 @@ fun main(args: Array<String>) {
         .benchResourceServiceComponent(resourceServiceComponent)
         .build()
 
+    val tegoComponent = DaggerTegoComponent.builder()
+        .loggerComponent(loggerComponent)
+        .build()
+
     // Language:
     val languageComponent = mb.ccbench.tiger.di.DaggerTigerBenchLanguageComponent.builder()
         .tigerModule(TigerModule())
@@ -44,6 +49,7 @@ fun main(args: Array<String>) {
         .resourceServiceComponent(resourceServiceComponent)
         .benchPlatformComponent(platformComponent)
         .tigerResourcesComponent(resourcesComponent)
+        .tegoComponent(tegoComponent)
         .build()
 
     // PIE
@@ -67,6 +73,7 @@ fun main(args: Array<String>) {
         .benchPlatformComponent(platformComponent)
         .tigerBenchLanguageComponent(languageComponent)
         .rootPieComponent(pieComponent)
+        .tegoComponent(tegoComponent)
         .build()
 
     benchComponent.mainCommand.main(args)

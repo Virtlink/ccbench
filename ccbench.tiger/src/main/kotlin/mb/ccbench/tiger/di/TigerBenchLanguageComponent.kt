@@ -6,6 +6,7 @@ import mb.ccbench.tiger.TigerRunBenchmarkTask
 import mb.ccbench.di.BenchLoggerComponent
 import mb.ccbench.di.BenchPlatformComponent
 import mb.resource.dagger.ResourceServiceComponent
+import mb.tego.strategies.TegoComponent
 import mb.tiger.TigerComponent
 import mb.tiger.TigerModule
 import mb.tiger.TigerResourcesComponent
@@ -23,6 +24,7 @@ import org.spoofax.interpreter.terms.ITermFactory
     TigerResourcesComponent::class,
     ResourceServiceComponent::class,
     BenchPlatformComponent::class,
+    TegoComponent::class,
   ]
 )
 interface TigerBenchLanguageComponent: TigerComponent {

@@ -12,6 +12,7 @@ import mb.pie.dagger.RootPieModule
 import mb.pie.runtime.PieBuilderImpl
 import mb.resource.dagger.RootResourceServiceModule
 import mb.resource.text.TextResourceRegistry
+import mb.tego.strategies.DaggerTegoComponent
 import mb.webdsl.DaggerWebDSLResourcesComponent
 import mb.webdsl.WebDSLModule
 
@@ -38,6 +39,10 @@ fun main(args: Array<String>) {
         .benchResourceServiceComponent(resourceServiceComponent)
         .build()
 
+    val tegoComponent = DaggerTegoComponent.builder()
+        .loggerComponent(loggerComponent)
+        .build()
+
     // Language:
     val languageComponent = DaggerWebDSLBenchLanguageComponent.builder()
         .webDSLModule(WebDSLModule())
@@ -46,6 +51,7 @@ fun main(args: Array<String>) {
         .resourceServiceComponent(resourceServiceComponent)
         .benchPlatformComponent(platformComponent)
         .webDSLResourcesComponent(resourcesComponent)
+        .tegoComponent(tegoComponent)
         .build()
 
     // PIE
@@ -69,6 +75,7 @@ fun main(args: Array<String>) {
         .benchPlatformComponent(platformComponent)
         .webDSLBenchLanguageComponent(languageComponent)
         .rootPieComponent(pieComponent)
+        .tegoComponent(tegoComponent)
         .build()
 
     benchComponent.mainCommand.main(args)

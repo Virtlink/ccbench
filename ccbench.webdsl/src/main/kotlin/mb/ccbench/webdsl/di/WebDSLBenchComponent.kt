@@ -7,6 +7,7 @@ import mb.ccbench.di.BenchResourceServiceComponent
 import mb.ccbench.di.BenchScope
 import mb.ccbench.webdsl.cli.WebDSLMainCommand
 import mb.pie.dagger.RootPieComponent
+import mb.tego.strategies.TegoComponent
 import mb.webdsl.WebDSLResourcesComponent
 
 @BenchScope
@@ -17,6 +18,7 @@ import mb.webdsl.WebDSLResourcesComponent
     BenchPlatformComponent::class,
     WebDSLBenchLanguageComponent::class,
     RootPieComponent::class,
+    TegoComponent::class,
 ])
 interface WebDSLBenchComponent {
     val mainCommand: WebDSLMainCommand
