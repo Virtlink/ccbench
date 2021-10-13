@@ -86,6 +86,7 @@ abstract class BenchmarkRunner(
             actualSeed,
             completeDeterministic,
             resultSet,
+            (tegoRuntime as? MeasuringTegoRuntime)?.measurements ?: emptyMap()
         )
 
         log.trace { "Writing benchmark summary..." }

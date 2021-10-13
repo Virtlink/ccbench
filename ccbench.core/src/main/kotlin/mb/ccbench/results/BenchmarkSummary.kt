@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import mb.ccbench.format.PathSerializer
+import mb.tego.strategies.runtime.MeasuringTegoRuntime
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
 import java.io.InputStream
 import java.io.OutputStream
@@ -32,6 +33,7 @@ data class BenchmarkSummary(
     val analysisFailedTests: Int,
 
     val mean: Timings,
+    val min: Timings,
     val p01: Timings,
     val p05: Timings,
     val p10: Timings,
@@ -39,6 +41,10 @@ data class BenchmarkSummary(
     val p90: Timings,
     val p95: Timings,
     val p99: Timings,
+    val max: Timings,
+
+    val strategies: Map<String, Long>,
+    val results: Map<String, Long>,
 ) {
     companion object {
 
@@ -48,7 +54,8 @@ data class BenchmarkSummary(
         fun fromResults(
             seed: Long,
             deterministicCompletion: Boolean,
-            results: BenchResultSet
+            results: BenchResultSet,
+            measurements: Map<String, MeasuringTegoRuntime.StrategyTime>?,
         ): BenchmarkSummary {
             val successResults = results.results.filter { it.kind == BenchResultKind.Success }
 
@@ -94,6 +101,7 @@ data class BenchmarkSummary(
             )
 
             val mean = getTimings { s -> s.mean }                   // MEAN(data)
+            val min = getTimings { s -> s.min }                     // MIN(data)
             val p01 = getTimings { s -> s.getPercentile(01.0) }     // PERCENTILE.EXC(data, 0.01)
             val p05 = getTimings { s -> s.getPercentile(05.0) }     // PERCENTILE.EXC(data, 0.05)
             val p10 = getTimings { s -> s.getPercentile(10.0) }     // PERCENTILE.EXC(data, 0.10)
@@ -101,6 +109,10 @@ data class BenchmarkSummary(
             val p90 = getTimings { s -> s.getPercentile(90.0) }     // PERCENTILE.EXC(data, 0.90)
             val p95 = getTimings { s -> s.getPercentile(95.0) }     // PERCENTILE.EXC(data, 0.95)
             val p99 = getTimings { s -> s.getPercentile(99.0) }     // PERCENTILE.EXC(data, 0.99)
+            val max = getTimings { s -> s.max }                     // MAX(data)
+
+            val strategyTimes = measurements?.map { (k, v) -> k to v.strategyTime / 1000_000 }?.sortedByDescending { (_, v) -> v }?.toMap() ?: emptyMap()
+            val resultTimes = measurements?.map { (k, v) -> k to v.resultTime / 1000_000 }?.sortedByDescending { (_, v) -> v }?.toMap() ?: emptyMap()
 
             return BenchmarkSummary(
                 results.name,
@@ -115,7 +127,9 @@ data class BenchmarkSummary(
                 results.results.count { it.kind == BenchResultKind.NoPlaceholder },
                 results.results.count { it.kind == BenchResultKind.AnalysisFailed },
                 mean,
-                p01, p05, p10, median, p90, p95, p99
+                min, p01, p05, p10, median, p90, p95, p99, max,
+                strategyTimes,
+                resultTimes
             )
         }
 
