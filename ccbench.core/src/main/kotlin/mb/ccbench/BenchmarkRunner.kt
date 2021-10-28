@@ -7,6 +7,7 @@ import mb.ccbench.utils.sample
 import mb.nabl2.terms.stratego.StrategoTerms
 import mb.pie.api.Pie
 import mb.resource.fs.FSResource
+import mb.stratego.common.StrategoRuntime
 import mb.tego.strategies.runtime.MeasuringTegoRuntime
 import mb.tego.strategies.runtime.TegoRuntime
 import me.tongfei.progressbar.ProgressBar
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import javax.inject.Provider
 
 /**
  * Runs a benchmark.
@@ -28,7 +30,7 @@ import java.util.*
 abstract class BenchmarkRunner(
     private val pie: Pie,
     private val runBenchmarkTask: RunBenchmarkTask,
-    private val termFactory: ITermFactory,
+    private val strategoRuntimeProvider: Provider<StrategoRuntime>,
     private val tegoRuntime: TegoRuntime,
 ) {
     private val log = KotlinLogging.logger {}
@@ -44,6 +46,7 @@ abstract class BenchmarkRunner(
         seed: Long?,
         completeDeterministic: Boolean,
     ): BenchResultSet {
+        val factory = strategoRuntimeProvider.get().termFactory
         val testCaseDir = benchmarkFile.parent.resolve(benchmark.testCaseDirectory)
 
         // Ensure the tmp project directory is empty, and copy the project
@@ -67,7 +70,7 @@ abstract class BenchmarkRunner(
             log.warn { "No tests will be run!" }
         }
         for (testCase in ProgressBar.wrap(selectedTestCases, "Tests")) {
-            val result = runTest(benchmark, testCaseDir, projectDir, tmpProjectDir, testCase, completeDeterministic)
+            val result = runTest(benchmark, testCaseDir, projectDir, tmpProjectDir, testCase, completeDeterministic, factory)
             results.add(result)
         }
 
@@ -106,6 +109,7 @@ abstract class BenchmarkRunner(
         dstProjectDir: Path,
         testCase: TestCase,
         completeDeterministic: Boolean,
+        factory: ITermFactory,
     ): BenchResult {
         log.trace { "Preparing ${testCase.name}..." }
         // Copy the file to the temporary directory
@@ -116,7 +120,7 @@ abstract class BenchmarkRunner(
 
         // Read the expected term
         val resExpectedFile = testCaseDir.resolve(testCase.expectedFile)
-        val expectedTerm = StrategoTerms(termFactory).fromStratego(TAFTermReader(termFactory).readFromPath(resExpectedFile))
+        val expectedTerm = StrategoTerms(factory).fromStratego(TAFTermReader(factory).readFromPath(resExpectedFile))
 
         log.trace { "Running ${testCase.name} ${if (completeDeterministic) "with deterministic completion" else "no deterministic completion"}..." }
         val result = runBenchmarkTask.run(

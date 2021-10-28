@@ -10,43 +10,40 @@ import mb.common.util.ListView
 import mb.constraint.pie.ConstraintAnalyzeTaskDef
 import mb.jsglr.pie.JsglrParseTaskDef
 import mb.nabl2.terms.stratego.TermOrigin
-import mb.pie.api.ExecContext
-import mb.pie.api.Pie
-import mb.pie.api.Supplier
-import mb.pie.api.TaskDef
+import mb.pie.api.*
 import mb.resource.hierarchical.ResourcePath
 import mb.resource.text.TextResourceRegistry
-import mb.stratego.pie.AstStrategoTransformTaskDef
+import mb.stratego.common.StrategoRuntime
+import mb.stratego.pie.GetStrategoRuntimeProvider
 import me.tongfei.progressbar.ProgressBar
 import mu.KotlinLogging
-import org.spoofax.interpreter.terms.IStrategoAppl
-import org.spoofax.interpreter.terms.IStrategoList
-import org.spoofax.interpreter.terms.IStrategoPlaceholder
-import org.spoofax.interpreter.terms.IStrategoTerm
-import org.spoofax.interpreter.terms.IStrategoTuple
-import org.spoofax.interpreter.terms.ITermFactory
+import org.spoofax.interpreter.terms.*
 import org.spoofax.terms.io.SimpleTextTermWriter
 import org.spoofax.terms.util.TermUtils
 import java.io.Serializable
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
+import javax.inject.Provider
 
 /**
  * Builds a single benchmark.
  */
 abstract class BuildBenchmarkTask(
-    private val parseTask: JsglrParseTaskDef,
-    private val getSourceFilesTask: TaskDef<ResourcePath, ListView<ResourcePath>>,
-    private val analyzeTask: ConstraintAnalyzeTaskDef,
-//    private val analyzeTask: ConstraintAnalyzeMultiTaskDef,
-    private val explicateTask: AstStrategoTransformTaskDef,
-    private val implicateTask: AstStrategoTransformTaskDef,
-    private val upgradePlaceholdersTask: AstStrategoTransformTaskDef,
-    private val downgradePlaceholdersTask: AstStrategoTransformTaskDef,
-    private val prettyPrintTask: AstStrategoTransformTaskDef,
+    private val parseTaskDef: JsglrParseTaskDef,
+    private val strategoRuntimeProvider: Provider<StrategoRuntime>,
+    private val getSourceFilesTaskDef: TaskDef<ResourcePath, ListView<ResourcePath>>,
+    private val analyzeTaskDef: ConstraintAnalyzeTaskDef,
+//    private val analyzeTaskDef: ConstraintAnalyzeMultiTaskDef,
+
+    private val preAnalyzeStrategyName: String,
+    private val postAnalyzeStrategyName: String,
+    private val upgradePlaceholdersStrategyName: String,
+    private val downgradePlaceholdersStrategyName: String,
+    private val isInjStrategyName: String,
+    private val ppPartialStrategyName: String,
+
     private val textResourceRegistry: TextResourceRegistry,
-    private val termFactory: ITermFactory,
     private val termWriter: SimpleTextTermWriter,
 ) : TaskDef<BuildBenchmarkTask.Input, ListView<TestCase>> {
 
@@ -88,6 +85,9 @@ abstract class BuildBenchmarkTask(
     override fun getId(): String = BuildBenchmarkTask::class.java.name
 
     override fun exec(ctx: ExecContext, input: Input): ListView<TestCase> {
+        val runtime = strategoRuntimeProvider.get()
+//        val runtime = ctx.require<None, OutTransient<Provider<StrategoRuntime>>>(getStrategoRuntimeProviderTaskDef, None.instance).getValue().get()
+
         val originalName = input.inputFile.withExtension("").toString()
         val resInputFile = input.projectDir.resolve(input.inputFile)
         val projectDirResource = ctx.require(input.projectDir)
@@ -96,7 +96,7 @@ abstract class BuildBenchmarkTask(
         val ast: IStrategoTerm
         try {
             // Parse the input
-            ast = parseTask.runParse(ctx, inputResource.key)
+            ast = parseTaskDef.runParse(ctx, inputResource.key)
         } catch (ex: Exception) {
             log.warn { "Failed to parse $originalName" }
             ex.printStackTrace()
@@ -105,7 +105,7 @@ abstract class BuildBenchmarkTask(
 
         try {
             // Analyze the file
-            val result = ctx.require(analyzeTask, ConstraintAnalyzeTaskDef.Input(
+            val result = ctx.require(analyzeTaskDef, ConstraintAnalyzeTaskDef.Input(
                 inputResource.key
             ) { Result.ofOk<IStrategoTerm, Exception>(ast) }).unwrap()
             if (result.result.messages.containsError()) {
@@ -130,17 +130,17 @@ abstract class BuildBenchmarkTask(
 
         // We pretty-print and parse the input resource again here, such that are sure
         // that the offset of the term is the same in the incomplete pretty-printed AST
-        val pp = prettyPrint(ctx, ast)
+        val pp = prettyPrint(runtime, ast)
         val ppResource = textResourceRegistry.createResource(pp)
-        val ppAst = parseTask.runParse(ctx, ppResource.key)
-        val explicatedAst = explicate(ctx, ppAst)
+        val ppAst = parseTaskDef.runParse(ctx, ppResource.key)
+        val explicatedAst = explicate(runtime, ppAst)
 
         // Get all possible incomplete ASTs
-        val incompleteAsts = buildIncompleteAsts(explicatedAst)
+        val incompleteAsts = buildIncompleteAsts(explicatedAst, runtime.termFactory)
 
         // Downgrade the placeholders in the incomplete ASTs, and pretty-print them
         val prettyPrintedAsts = incompleteAsts.mapNotNull { it.map { term ->
-            prettyPrint(ctx, implicate(ctx, downgrade(ctx, term)))
+            prettyPrint(runtime, implicate(runtime, downgrade(runtime, term)))
         } }
 
         // Construct test cases and write the files to the test cases directory
@@ -191,12 +191,12 @@ abstract class BuildBenchmarkTask(
      * @param term the term
      * @return a sequence of all possible variants of this term with a placeholder
      */
-    private fun buildIncompleteAsts(term: IStrategoTerm): List<TestCaseInfo<IStrategoTerm>> {
+    private fun buildIncompleteAsts(term: IStrategoTerm, factory: ITermFactory): List<TestCaseInfo<IStrategoTerm>> {
         // Replaced the term with a placeholder
-        return listOf(TestCaseInfo(makePlaceholder("x"), 0 /* getStartOffset(term)*/, term)) +
+        return listOf(TestCaseInfo(makePlaceholder("x", factory), 0 /* getStartOffset(term)*/, term)) +
                 // or replaced a subterm with all possible sub-asts with a placeholder
                 term.subterms.flatMapIndexed { i, subTerm ->
-                    buildIncompleteAsts(subTerm).map { (newSubTerm, offset, expectedAst) -> TestCaseInfo(term.withSubterm(i, newSubTerm), offset, expectedAst) }
+                    buildIncompleteAsts(subTerm, factory).map { (newSubTerm, offset, expectedAst) -> TestCaseInfo(term.withSubterm(i, newSubTerm, factory), offset, expectedAst) }
                 }
     }
 
@@ -207,14 +207,14 @@ abstract class BuildBenchmarkTask(
      * @return the new term, with its subterm replaces
      */
     @Suppress("UNCHECKED_CAST")
-    private fun <T: IStrategoTerm> T.withSubterm(index: Int, term: IStrategoTerm): T {
+    private fun <T: IStrategoTerm> T.withSubterm(index: Int, term: IStrategoTerm, factory: ITermFactory): T {
         require(index in 0..this.subtermCount)
         val newSubterms = this.subterms.toTypedArray()
         newSubterms[index] = term
         return when (this) {
-            is IStrategoAppl -> termFactory.makeAppl(this.constructor, newSubterms, this.annotations) as T
-            is IStrategoList -> termFactory.makeList(newSubterms, this.annotations) as T
-            is IStrategoTuple -> termFactory.makeTuple(newSubterms, this.annotations) as T
+            is IStrategoAppl -> factory.makeAppl(this.constructor, newSubterms, this.annotations) as T
+            is IStrategoList -> factory.makeList(newSubterms, this.annotations) as T
+            is IStrategoTuple -> factory.makeTuple(newSubterms, this.annotations) as T
             else -> throw IllegalStateException("This should not happen.")
         }
     }
@@ -236,8 +236,8 @@ abstract class BuildBenchmarkTask(
      * @param name the name of the placeholder, it can be anything
      * @return the created placeholder
      */
-    private fun makePlaceholder(name: String): IStrategoPlaceholder {
-        return termFactory.makePlaceholder(termFactory.makeString(name))
+    private fun makePlaceholder(name: String, factory: ITermFactory): IStrategoPlaceholder {
+        return factory.makePlaceholder(factory.makeString(name))
     }
 
     /**
@@ -254,56 +254,56 @@ abstract class BuildBenchmarkTask(
     /**
      * Explicates the term.
      *
-     * @param ctx the execution context
+     * @param runtime the Stratego runtime
      * @param term the term
      * @return the downgraded term
      */
-    private fun explicate(ctx: ExecContext, term: IStrategoTerm): IStrategoTerm {
-        return ctx.require(explicateTask, Supplier { Result.ofOk<IStrategoTerm, Exception>(term) }).unwrap()
+    private fun explicate(runtime: StrategoRuntime, term: IStrategoTerm): IStrategoTerm {
+        return runtime.invoke(preAnalyzeStrategyName, term)
     }
 
     /**
      * Implicates the term.
      *
-     * @param ctx the execution context
+     * @param runtime the Stratego runtime
      * @param term the term
      * @return the downgraded term
      */
-    private fun implicate(ctx: ExecContext, term: IStrategoTerm): IStrategoTerm {
-        return ctx.require(implicateTask, Supplier { Result.ofOk<IStrategoTerm, Exception>(term) }).unwrap()
+    private fun implicate(runtime: StrategoRuntime, term: IStrategoTerm): IStrategoTerm {
+        return runtime.invoke(postAnalyzeStrategyName, term)
     }
 
     /**
      * Upgrades the placeholders in the term.
      *
-     * @param ctx the execution context
+     * @param runtime the Stratego runtime
      * @param term the term
      * @return the downgraded term
      */
-    private fun upgrade(ctx: ExecContext, term: IStrategoTerm): IStrategoTerm {
-        return ctx.require(upgradePlaceholdersTask, Supplier { Result.ofOk<IStrategoTerm, Exception>(term) }).unwrap()
+    private fun upgrade(runtime: StrategoRuntime, term: IStrategoTerm): IStrategoTerm {
+        return runtime.invoke(upgradePlaceholdersStrategyName, term)
     }
 
     /**
      * Downgrades the placeholders in the term.
      *
-     * @param ctx the execution context
+     * @param runtime the Stratego runtime
      * @param term the term
      * @return the downgraded term
      */
-    private fun downgrade(ctx: ExecContext, term: IStrategoTerm): IStrategoTerm {
-        return ctx.require(downgradePlaceholdersTask, Supplier { Result.ofOk<IStrategoTerm, Exception>(term) }).unwrap()
+    private fun downgrade(runtime: StrategoRuntime, term: IStrategoTerm): IStrategoTerm {
+        return runtime.invoke(downgradePlaceholdersStrategyName, term)
     }
 
     /**
      * Pretty-prints the term.
      *
-     * @param ctx the execution context
+     * @param runtime the Stratego runtime
      * @param term the term
      * @return the pretty-printed term
      */
-    private fun prettyPrint(ctx: ExecContext, term: IStrategoTerm): String {
-        return TermUtils.toJavaString(ctx.require(prettyPrintTask, Supplier { Result.ofOk<IStrategoTerm, Exception>(term) }).unwrap())
+    private fun prettyPrint(runtime: StrategoRuntime, term: IStrategoTerm): String {
+        return TermUtils.toJavaString(runtime.invoke(ppPartialStrategyName, term))
     }
 
     /**

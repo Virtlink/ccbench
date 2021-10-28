@@ -2,79 +2,76 @@ package mb.ccbench.tiger
 
 import mb.ccbench.di.BenchLoggerModule
 import mb.ccbench.di.DaggerBenchLoggerComponent
-import mb.ccbench.di.DaggerBenchPlatformComponent
 import mb.ccbench.di.DaggerBenchResourceServiceComponent
+import mb.ccbench.tiger.di.DaggerTigerBenchComponent
 import mb.ccbench.tiger.di.TigerBenchModule
 import mb.pie.dagger.DaggerRootPieComponent
 import mb.pie.dagger.RootPieModule
 import mb.pie.runtime.PieBuilderImpl
 import mb.resource.dagger.RootResourceServiceModule
 import mb.resource.text.TextResourceRegistry
-import mb.tego.strategies.DaggerTegoComponent
+import mb.spoofax.core.platform.DaggerPlatformComponent
+import mb.tiger.DaggerTigerComponent
 import mb.tiger.DaggerTigerResourcesComponent
 import mb.tiger.TigerModule
 
 fun main(args: Array<String>) {
-
-    // Platform:
     val loggerComponent = DaggerBenchLoggerComponent.builder()
         .benchLoggerModule(BenchLoggerModule())
         .build()
 
-    // Language:
     val resourcesComponent = DaggerTigerResourcesComponent.create()
-    // Platform:
+
     val textResourceRegistry = TextResourceRegistry()
+
     val resourceServiceModule = RootResourceServiceModule()
         .addRegistriesFrom(resourcesComponent)
         .addRegistry(textResourceRegistry)
+
     val resourceServiceComponent = DaggerBenchResourceServiceComponent.builder()
-        .benchLoggerComponent(loggerComponent)
         .rootResourceServiceModule(resourceServiceModule)
-        .build()
-    val platformComponent = DaggerBenchPlatformComponent.builder()
         .benchLoggerComponent(loggerComponent)
-        .benchResourceServiceComponent(resourceServiceComponent)
         .build()
 
-    val tegoComponent = DaggerTegoComponent.builder()
+    val platformComponent = DaggerPlatformComponent.builder()
         .loggerComponent(loggerComponent)
+        .resourceServiceComponent(resourceServiceComponent)
         .build()
 
-    // Language:
-    val languageComponent = mb.ccbench.tiger.di.DaggerTigerBenchLanguageComponent.builder()
+    val languageComponent = DaggerTigerComponent.builder()
         .tigerModule(TigerModule())
-        .tigerBenchModule(TigerBenchModule(textResourceRegistry))
-        .benchLoggerComponent(loggerComponent)
-        .resourceServiceComponent(resourceServiceComponent)
-        .benchPlatformComponent(platformComponent)
+        .loggerComponent(loggerComponent)
         .tigerResourcesComponent(resourcesComponent)
-        .tegoComponent(tegoComponent)
+        .resourceServiceComponent(resourceServiceComponent)
+        .platformComponent(platformComponent)
         .build()
 
     // PIE
-    val pieModule = RootPieModule({ PieBuilderImpl() }, languageComponent)
+    val rootPieModule = RootPieModule({ PieBuilderImpl() }, languageComponent)
         //.withTracerFactory(::LoggingTracer) // Only for debugging, performance overhead
-    val pieComponent = DaggerRootPieComponent.builder()
-        .rootPieModule(pieModule)
+
+    val rootPieComponent = DaggerRootPieComponent.builder()
+        .rootPieModule(rootPieModule)
         .loggerComponent(loggerComponent)
         .resourceServiceComponent(resourceServiceComponent)
         .build()
 
-    pieModule.addTaskDefs(
-        languageComponent.buildBenchmarkTask,
-        languageComponent.runBenchmarkTask,
+    val tigerBenchModule = TigerBenchModule(
+        loggerComponent.loggerFactory,
+        textResourceRegistry,
+        languageComponent.strategoRuntimeProvider
     )
 
-    val benchComponent = mb.ccbench.tiger.di.DaggerTigerBenchComponent.builder()
-        .benchLoggerComponent(loggerComponent)
-        .tigerResourcesComponent(resourcesComponent)
-        .benchResourceServiceComponent(resourceServiceComponent)
-        .benchPlatformComponent(platformComponent)
-        .tigerBenchLanguageComponent(languageComponent)
-        .rootPieComponent(pieComponent)
-        .tegoComponent(tegoComponent)
+    val benchComponent = DaggerTigerBenchComponent.builder()
+        .tigerBenchModule(tigerBenchModule)
+        .tigerComponent(languageComponent)
+        .rootPieComponent(rootPieComponent)
         .build()
+
+    rootPieModule.addTaskDefs(
+        benchComponent.buildBenchmarkTask,
+        benchComponent.runBenchmarkTask,
+    )
 
     benchComponent.mainCommand.main(args)
 }

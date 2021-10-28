@@ -15,8 +15,8 @@ import mb.pie.api.ExecContext
 import mb.pie.api.Pie
 import mb.pie.api.TaskDef
 import mb.resource.ResourceKey
-import mb.statix.TermCodeCompletionItem
-import mb.statix.TermCodeCompletionResult
+import mb.statix.codecompletion.TermCodeCompletionItem
+import mb.statix.codecompletion.TermCodeCompletionResult
 import mb.statix.codecompletion.pie.CodeCompletionTaskDef
 import mb.statix.codecompletion.pie.MeasuringCodeCompletionEventHandler
 import mu.KotlinLogging
@@ -111,12 +111,12 @@ abstract class RunBenchmarkTask(
             astSize = computeTermSize(ast)
 
             // Execute code completion
+            codeCompletionTask.withEventHandlerProvider { eventHandler };
             results = ctx.require(
                 codeCompletionTask, CodeCompletionTaskDef.Input(
                     Region.atOffset(input.testCase.placeholderOffset),
                     dstInputResource.key,
                     ctx.require(input.targetProjectDir).path,
-                    eventHandler,
                     input.completeDeterministic,
                 )
             ).unwrap() as TermCodeCompletionResult
