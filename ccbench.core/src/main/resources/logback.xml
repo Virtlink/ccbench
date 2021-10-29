@@ -13,7 +13,8 @@
   <logger name="mb.tego.strategies.runtime.TegoRuntimeImpl" level="WARN"/>
   <logger name="tego::" level="WARN"/>
 
-  <root level="TRACE">
+  <root level="INFO">
+<!--  <root level="TRACE">-->
     <appender-ref ref="console" />
   </root>
 </configuration>
