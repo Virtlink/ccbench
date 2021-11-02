@@ -90,6 +90,19 @@ scp w2018:tiger-output/Tiger.csv Tiger.csv
   (This is what happens in WebDSL Statix spec.)
 
 
+## Profiling in IntelliJ
+To profile, use a profiler on a _Kotlin Run Configuration_ with the following settings:
+
+- Module: `ccbench.ccbench.tiger.main`
+- Class: `mb.ccbench.tiger.MainKt`
+- Program Arguments:
+  ```
+  run tiger-laptop \
+    -p /Users/daniel/repos/tiger/tiger-benchmark/ \
+    -i /Users/daniel/repos/tiger/tiger-tests/Tigercopy.yml \
+    -o /Users/daniel/repos/tiger/tiger-results/ \
+    --seed 12345 -s 1
+  ```
 
 
 
