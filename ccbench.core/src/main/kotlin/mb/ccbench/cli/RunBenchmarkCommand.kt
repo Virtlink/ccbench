@@ -30,6 +30,7 @@ abstract class RunBenchmarkCommand(
     val inputFile: Path by option("-i", "--input", help = "Benchmark YAML file").path(mustExist = true, canBeFile = true, canBeDir = false).required()
     val outputDir: Path? by option("-o", "--output", help = "Output directory").path(mustExist = false, canBeFile = false, canBeDir = true)
     val samples: Int? by option("-s", "--sample", help = "How many samples in total").int()
+    val warmups: Int? by option("-w", "--warmups", help = "How many warmups in total").int()
     val seed: Long? by option("--seed", help = "The seed").long()
     val deterministic: Boolean by option("-d", "--deterministic", help = "Whether to run deterministic completion.").flag(default = false)
 
@@ -56,6 +57,7 @@ abstract class RunBenchmarkCommand(
             tmpProjectDir,
             actualOutputDir,
             samples,
+            warmups,
             seed,
             deterministic,
         )

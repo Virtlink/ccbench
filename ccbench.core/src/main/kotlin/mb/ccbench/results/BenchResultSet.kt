@@ -20,7 +20,7 @@ import kotlin.io.path.bufferedWriter
  */
 data class BenchResultSet(
     val name: String,
-    val results: List<BenchResult>
+    val results: List<BenchResult>,
 ) {
 
     /**
