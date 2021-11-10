@@ -5,21 +5,22 @@ This performs a code completion benchmark test. The inputs are files of the test
 For each completion, it measures the time from invocation until getting results. We may or may not have to include the time required for parsing and initial analysis.
 
 ## Build
-This project depends on several Spoofax 3 projects. Easiest is to build [Spoofax 3][1] and install all its dependencies locally:
+This project depends on several Spoofax 3 projects. Easiest is to include the [Spoofax 3][1] `devenv` as an included build when building on the command line:
 
 ```sh
-cd devenv/
-./gradlew publishAllToMavenLocal
+./gradlew --include-build ../devenv build 
 ```
-
-> *Note*: By default Gitonium generates the wrong version numbers for snapshot builds, such as `develop-SNAPSHOT`.
-> Gradle will not sort them correctly and will let older releases take precedence. Add Gitonium to the `repo.properties`,
-> go into the project, and change the version string to something like `10.0.0-$branch-SNAPSHOT`.
 
 To create an installation of this project:
 
 ```sh
-./gradlew installDist
+./gradlew --include-build ../devenv installDist
+```
+
+Or add this line to `settings.gradle.kts`:
+
+```kotlin
+includeBuild("../devenv")
 ```
 
 
