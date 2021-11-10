@@ -1,5 +1,6 @@
 package mb.ccbench.tiger
 
+import com.github.ajalt.mordant.terminal.Terminal
 import mb.ccbench.BenchmarkRunner
 import mb.pie.api.Pie
 import mb.stratego.common.StrategoRuntime
@@ -13,9 +14,11 @@ class TigerBenchmarkRunner @Inject constructor(
     runBenchmarkTask: TigerRunBenchmarkTask,
     strategoRuntimeProvider: Provider<StrategoRuntime>,
     tegoRuntime: TegoRuntime,
+    terminal: Terminal,
 ) : BenchmarkRunner(
     pie,
     runBenchmarkTask,
     strategoRuntimeProvider,
-    tegoRuntime
+    tegoRuntime,
+    terminal,
 )

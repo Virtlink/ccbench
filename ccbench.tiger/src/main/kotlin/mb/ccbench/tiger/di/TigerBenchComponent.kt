@@ -1,5 +1,7 @@
 package mb.ccbench.tiger.di
 
+import com.github.ajalt.mordant.rendering.AnsiLevel
+import com.github.ajalt.mordant.terminal.Terminal
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -8,7 +10,6 @@ import mb.ccbench.tiger.TigerBuildBenchmarkTask
 import mb.ccbench.tiger.TigerRunBenchmarkTask
 import mb.ccbench.tiger.cli.TigerMainCommand
 import mb.log.api.LoggerFactory
-import mb.pie.dagger.PieComponent
 import mb.pie.dagger.RootPieComponent
 import mb.resource.text.TextResourceRegistry
 import mb.stratego.common.StrategoRuntime
@@ -45,12 +46,15 @@ class TigerBenchModule(
     @Provides fun provideTextResourceRegistry(): TextResourceRegistry =
         this.textResourceRegistry
 
-    @Provides fun provideSimpleTextTermWriter(): SimpleTextTermWriter =
+    @Provides @BenchScope fun provideSimpleTextTermWriter(): SimpleTextTermWriter =
         SimpleTextTermWriter()
 
     @Provides fun provideStrategoRuntime(): StrategoRuntime =
         strategoRuntimeProvider.get()
 
-    @Provides fun provideTegoRuntime(): TegoRuntime =
+    @Provides @BenchScope fun provideTegoRuntime(): TegoRuntime =
         TegoRuntimeImpl(loggerFactory)
+
+    @Provides @BenchScope fun provideTerminal(): Terminal =
+        Terminal(AnsiLevel.TRUECOLOR)
 }

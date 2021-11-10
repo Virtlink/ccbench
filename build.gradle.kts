@@ -75,6 +75,7 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
         // CLI
         implementation("me.tongfei:progressbar")
         implementation("com.github.ajalt.clikt:clikt")
+        implementation("com.github.ajalt.mordant:mordant:2.0.0-beta3")
 
         // CSV
         implementation("org.apache.commons:commons-csv")
