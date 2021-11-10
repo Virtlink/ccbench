@@ -30,15 +30,15 @@ To create an installation of this project:
 ```bash
 # Copy ccbench.tiger
 # - in the ccbench source directory:
-rsync -av ./ccbench.tiger/build/install/ccbench.tiger/ w2018:ccbench.tiger
+rsync -av ./ccbench.tiger/build/install/ccbench.tiger/ w2019:ccbench.tiger
 
 # Copy the source project
 # - in the Tiger repo directory:
-rsync -av ./tiger-benchmark/ w2018:tiger-benchmark/
+rsync -av ./tiger-benchmark/ w2019:tiger-benchmark/
 
 # (Optionally) copy the test files
 # - in the directory where the test files where generated
-rsync -av ./tiger-tests/ w2018:tiger-tests/
+rsync -av ./tiger-tests/ w2019:tiger-tests/
 
 # On webdsl-2018:
 
@@ -52,7 +52,7 @@ rsync -av ./tiger-tests/ w2018:tiger-tests/
 # Run tests
 # - in the ccbench source directory
 ./ccbench.tiger/bin/ccbench.tiger \
-  run tiger-w2018 \
+  run tiger-w2019 \
   -p tiger-benchmark/ \
   -i tiger-tests/Tiger.yml \
   -o tiger-results/ \
@@ -69,7 +69,7 @@ git clone --depth 1 git@github.com:MetaBorgCube/metaborg-tiger.git tiger
 ## Copy results back to local machine
 
 ```bash
-scp w2018:tiger-output/Tiger.csv Tiger.csv
+scp w2019:tiger-results/20211109204451-tiger-w2019.\* .
 ```
 
 ## How to make a language ready for code completion?
