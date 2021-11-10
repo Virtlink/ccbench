@@ -56,6 +56,7 @@ rsync -av ./tiger-tests/ w2019:tiger-tests/
   -p tiger-benchmark/ \
   -i tiger-tests/Tiger.yml \
   -o tiger-results/ \
+  -w 100 \
   --seed 12345
 ```
 
