@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     java
     kotlin("jvm") version "1.5.31"
@@ -18,6 +20,16 @@ allprojects {
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor(0, "seconds")
         resolutionStrategy.cacheDynamicVersionsFor(0, "seconds")
+    }
+
+//    java {
+//        sourceCompatibility = JavaVersion.VERSION_11
+//        targetCompatibility = JavaVersion.VERSION_11
+//    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.freeCompilerArgs += listOf("-Xopt-in=kotlin.RequiresOptIn")
     }
 }
 
