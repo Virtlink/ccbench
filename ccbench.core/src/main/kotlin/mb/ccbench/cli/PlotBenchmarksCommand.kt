@@ -32,7 +32,8 @@ class PlotBenchmarksCommand @Inject constructor() : CliktCommand(name = "plot") 
         log.debug { "Plotting scatter plot..." }
         val scatterPdfFile = actualOutputFile.withExtension(".scatter.pdf")
         val scatterPngFile = actualOutputFile.withExtension(".scatter.png")
-        TimePlotter("Performance", "File size (AST nodes)", "Total time (ms)", { it.astSize }, { it.timings.totalTime })
+        TimePlotter("Performance", "File size (AST nodes)", "Completion time (ms)", { it.astSize }, { it.timings.codeCompletionTime })
+//        TimePlotter("Performance", "File size (AST nodes)", "Total time (ms)", { it.astSize }, { it.timings.totalTime })
             .plot(resultSets, scatterPdfFile, scatterPngFile, 800, 600)
         log.info { "Wrote scatter plot PDF to $scatterPdfFile" }
         log.info { "Wrote scatter plot PNG to $scatterPngFile" }
