@@ -39,7 +39,7 @@ class TimePlotter(
             yAxisLabel,     // y axis label
             dataset,        // data
             PlotOrientation.VERTICAL,
-            false,
+            true,
             false,
             false,
         )

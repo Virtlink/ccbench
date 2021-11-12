@@ -31,6 +31,7 @@ includeBuild("../devenv")
 ```bash
 # Copy ccbench.tiger
 # - in the ccbench source directory:
+./gradlew installDist
 rsync -av ./ccbench.tiger/build/install/ccbench.tiger/ w2019:ccbench.tiger
 
 # Copy the source project
@@ -53,7 +54,7 @@ rsync -av ./tiger-tests/ w2019:tiger-tests/
 # Run tests
 # - in the ccbench source directory
 ./ccbench.tiger/bin/ccbench.tiger \
-  run tiger-w2019 \
+  run tiger-w2019-fast-nodelay-nodistinct \
   -p tiger-benchmark/ \
   -i tiger-tests/Tiger.yml \
   -o tiger-results/ \
