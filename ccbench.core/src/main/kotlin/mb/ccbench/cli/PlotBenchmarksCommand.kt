@@ -44,7 +44,7 @@ class PlotBenchmarksCommand @Inject constructor() : CliktCommand(name = "plot") 
             val boxPdfFile = actualOutputFile.withExtension(".box$i.pdf")
             val boxPngFile = actualOutputFile.withExtension(".box$i.png")
             BoxPlotter(
-                "Performance",
+                "Performance (${resultSet.name})",
                 "File size (AST nodes)",
                 "Total time (ms)",
                 { val bucket = (it.astSize / 200) * 200; bucket to ">= $bucket" },

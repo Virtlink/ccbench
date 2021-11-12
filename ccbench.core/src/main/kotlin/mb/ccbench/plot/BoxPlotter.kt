@@ -39,7 +39,7 @@ class BoxPlotter(
             xAxisLabel,
             yAxisLabel,
             data,
-            false
+            true
         )
 
         chart.backgroundPaint = Color.white

@@ -60,6 +60,12 @@ rsync -av ./tiger-tests/ w2019:tiger-tests/
   -o tiger-results/ \
   -w 100 \
   --seed 12345
+  
+# Plot the results
+/Users/daniel/repos/spoofax3/ccbench/ccbench.tiger/build/install/ccbench.tiger/bin/ccbench.tiger plot \
+  -i 20211112173932-tiger-w2019-fast-nodelay-nodistinct.csv \
+  -i 20211111173327-tiger-w2019-fast.csv \
+  -o 20211112-tiger-w2019-distinct-vs-nodistict.pdf
 ```
 
 > Note: Add `-s 100` to run only 100 tests.
