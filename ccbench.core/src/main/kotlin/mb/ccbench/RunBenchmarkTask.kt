@@ -69,7 +69,7 @@ abstract class RunBenchmarkTask(
             val topDownSession = session.updateAffectedBy(setOf(
                 dstInputResourceKey
             ))
-            return topDownSession.requireWithoutObserving(this.createTask(Input(
+            val result = topDownSession.requireWithoutObserving(this.createTask(Input(
                 benchmark,
                 testCaseDir,
                 sourceProjectDir,
@@ -78,6 +78,9 @@ abstract class RunBenchmarkTask(
                 expectedTerm,
                 completeDeterministic
             )))
+            session.dropCallbacks()
+            session.dropStore()
+            return result
         }
     }
 
