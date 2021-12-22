@@ -5,4 +5,4 @@ include("ccbench.tiger")
 //include("ccbench.webdsl")
 include("ccbench.platform")
 
-includeBuild("../devenv-clean")
+includeBuild("../devenv")
