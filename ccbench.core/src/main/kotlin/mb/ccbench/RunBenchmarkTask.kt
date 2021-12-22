@@ -127,27 +127,27 @@ abstract class RunBenchmarkTask(
             kind = if (!results.proposals.isEmpty) {
                 val extProposals = results.proposals.filterIsInstance<TermCodeCompletionItem>()
                 val success =
-                    extProposals.filter { tryMatchExpectation(results.placeholder, input.expectedTerm, it.term) }
-                        .isNotEmpty()
+                    extProposals.any { tryMatchExpectation(results.placeholder, input.expectedTerm, it.term) }
                 if (success) {
+                    log.info { "Success. Expected: ${input.expectedTerm}, got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
                     BenchResultKind.Success
                 } else {
-                    log.warn { "Expected: ${input.expectedTerm}, got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
+                    log.warn { "Fail. Expected: ${input.expectedTerm}, got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
                     BenchResultKind.Failed
                 }
             } else if (input.expectedTerm is IStringTerm) {
-                log.info { "Expected literal: ${input.expectedTerm}, got: <nothing>" }
+                log.info { "Success. Expected literal: ${input.expectedTerm}, got no proposals." }
                 BenchResultKind.Literal
             } else {
-                log.warn { "Expected: ${input.expectedTerm}, got: <nothing>" }
+                log.warn { "Fail. Expected: ${input.expectedTerm}, got no proposals." }
                 BenchResultKind.NoResults
             }
         } catch (ex: IllegalStateException) {
             kind = if (ex.message?.contains("input program validation failed") == true) {
-                log.warn { "Analysis failed: ${ex.message}" }
+                log.warn { "Fail. Analysis failed: ${ex.message}" }
                 BenchResultKind.AnalysisFailed
             } else {
-                log.warn(ex) { "Error running test." }
+                log.warn(ex) { "Fail. Error running test." }
                 BenchResultKind.Error
             }
         }

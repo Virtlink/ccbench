@@ -177,6 +177,7 @@ abstract class BuildBenchmarkTask(
                     input.testCaseDir.relativize(outputFile),
                     placeholderRegion.startOffset,
                     input.testCaseDir.relativize(expectedFile),
+                    case.expectsLiteral,
                 )
             )
             log.debug { "Wrote $name." }
@@ -193,10 +194,11 @@ abstract class BuildBenchmarkTask(
      */
     private fun buildIncompleteAsts(term: IStrategoTerm, factory: ITermFactory): List<TestCaseInfo<IStrategoTerm>> {
         // Replaced the term with a placeholder
-        return listOf(TestCaseInfo(makePlaceholder("x", factory), 0 /* getStartOffset(term)*/, term)) +
+        val isLiteral = term.type == TermType.STRING
+        return listOf(TestCaseInfo(makePlaceholder("x", factory), 0 /* getStartOffset(term)*/, term, isLiteral)) +
                 // or replaced a subterm with all possible sub-asts with a placeholder
                 term.subterms.flatMapIndexed { i, subTerm ->
-                    buildIncompleteAsts(subTerm, factory).map { (newSubTerm, offset, expectedAst) -> TestCaseInfo(term.withSubterm(i, newSubTerm, factory), offset, expectedAst) }
+                    buildIncompleteAsts(subTerm, factory).map { (newSubTerm, offset, expectedAst, expectsLiteral) -> TestCaseInfo(term.withSubterm(i, newSubTerm, factory), offset, expectedAst, expectsLiteral) }
                 }
     }
 
@@ -333,15 +335,17 @@ abstract class BuildBenchmarkTask(
      * @property value the value
      * @property offset the placeholder offset
      * @property expectedAst the expected AST
+     * @property expectsLiteral whether to expect a literal at the placeholder
      */
     data class TestCaseInfo<out T>(
         val value: T,
         val offset: Int,
         val expectedAst: IStrategoTerm,
+        val expectsLiteral: Boolean,
     ) {
         fun <R> map(f: (T) -> R?): TestCaseInfo<R>? {
             val newValue = f(value) ?: return null
-            return TestCaseInfo(newValue, offset, expectedAst)
+            return TestCaseInfo(newValue, offset, expectedAst, expectsLiteral)
         }
     }
 

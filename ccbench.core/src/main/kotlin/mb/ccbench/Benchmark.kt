@@ -107,7 +107,8 @@ data class Benchmark(
  * @property file the file being replaced in this test case, relative to the project directory
  * @property inputFile the input file for this test case, relative to the test cases directory
  * @property placeholderOffset the zero-based offset of the placeholder in the [inputFile]
- * @property expectedFile the file with the extected term for this test case, relative to the test cases directory
+ * @property expectedFile the file with the extracted term for this test case, relative to the test cases directory
+ * @property expectsLiteral whether a literal is expected
  */
 data class TestCase(
     val name: String,
@@ -115,6 +116,7 @@ data class TestCase(
     val inputFile: Path,
     val placeholderOffset: Int,
     val expectedFile: Path,
+    val expectsLiteral: Boolean,
 ): Serializable
 
 
