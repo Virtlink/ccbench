@@ -1,0 +1,19 @@
+for i := 0 to 30 do
+  (
+    let
+      type intArray = array of int
+      type intArray2 = array of int
+      type intArray3 = array of int
+      type intArray4 = array of int
+      type intArray5 = array of int
+     in
+      let
+        function queens( ) : int =
+          [[Exp]]
+       in
+        queens( );
+        (
+        )
+      end
+    end
+  )

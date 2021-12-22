@@ -1,0 +1,7 @@
+let
+  type a = [[Type]]
+  var b := 4
+  type a = string
+ in
+  0
+end

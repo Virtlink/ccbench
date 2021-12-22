@@ -1,0 +1,9 @@
+let
+  type myrec = {
+                  x : int
+               }
+  [[Dec]]
+ in
+  rec1.x := 99;
+  rec1.x
+end

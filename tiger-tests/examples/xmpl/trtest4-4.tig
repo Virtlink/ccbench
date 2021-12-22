@@ -1,0 +1,5 @@
+let
+  var [[ID]] : string := "abc"
+ in
+  x
+end

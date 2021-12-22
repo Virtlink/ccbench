@@ -1,0 +1,7 @@
+let
+  var a := [[IntConst]]
+  function g(a : int) : int =
+    a
+ in
+  g(2)
+end

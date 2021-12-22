@@ -1,0 +1,5 @@
+let
+  [[Dec]]
+ in
+  f(10)
+end

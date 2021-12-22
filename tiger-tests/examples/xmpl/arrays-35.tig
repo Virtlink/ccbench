@@ -1,0 +1,7 @@
+let
+  type vector = array of int
+  type matrix = array of vector
+  var v : vector := vector[3] of 1
+  var t : matrix := matrix[2] of vector[3] of 0
+ in
+end

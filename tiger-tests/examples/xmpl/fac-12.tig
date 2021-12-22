@@ -1,0 +1,6 @@
+let
+  function fact(n : int) : int =
+    [[Exp]]
+ in
+  fact(10)
+end

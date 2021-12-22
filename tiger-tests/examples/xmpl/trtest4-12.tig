@@ -1,0 +1,5 @@
+let
+  var x : string := "abc"
+ in
+  [[Var]]
+end

@@ -1,0 +1,4 @@
+let
+  var msg : string := "Hello World"
+ in
+end

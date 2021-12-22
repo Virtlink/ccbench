@@ -1,0 +1,18 @@
+for i := 0 to 30 do
+  (
+    let
+      type intArray = array of int
+     in
+      let
+        [[Dec]]
+       in
+        let
+          var flags := intArray[5000] of 1
+         in
+          sieve(flags, 5000);
+          (
+          )
+        end
+      end
+    end
+  )

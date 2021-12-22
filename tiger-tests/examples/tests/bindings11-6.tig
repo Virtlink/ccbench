@@ -1,0 +1,7 @@
+let
+  type point = {
+               }
+  var p := point{ x = 1, y = 10 }
+ in
+  p.y
+end

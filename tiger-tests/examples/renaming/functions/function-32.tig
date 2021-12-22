@@ -1,0 +1,8 @@
+let
+  function plus(a : int, b : int) : int =
+    (
+      a + b
+    )
+ in
+  plus([[IntConst]], 1)
+end

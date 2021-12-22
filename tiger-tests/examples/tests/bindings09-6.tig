@@ -1,0 +1,7 @@
+let
+  type x = {
+           }
+  var x : x := x{ x = 1 }
+ in
+  x.x + 1
+end

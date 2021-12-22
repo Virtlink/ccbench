@@ -1,0 +1,5 @@
+let
+  type vector = array of int
+ in
+  [[Exp]]
+end

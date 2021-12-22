@@ -1,0 +1,9 @@
+let
+  function printnl(x : string) =
+    (
+      print(x);
+      [[Exp]]
+    )
+ in
+  printnl("Hello World")
+end

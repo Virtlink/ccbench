@@ -1,0 +1,11 @@
+let
+  function fact(n : int) : int =
+    if n < 1 then
+      1
+    else
+      (
+        n * fact([[ID]] - 1)
+      )
+ in
+  fact(10)
+end

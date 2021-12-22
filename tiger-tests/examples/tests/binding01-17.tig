@@ -1,0 +1,6 @@
+let
+  var x := "1"
+  var x := 2
+ in
+  x + [[Exp]]
+end

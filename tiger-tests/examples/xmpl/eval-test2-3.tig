@@ -1,0 +1,5 @@
+let
+  [[Dec]]
+ in
+  fac(5)
+end

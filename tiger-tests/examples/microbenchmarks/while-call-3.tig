@@ -1,0 +1,20 @@
+let
+  [[Dec]]
+  function bar( ) : int =
+    42
+  function foo( ) : string =
+    ""
+  function plus( ) : int =
+    1 + 2
+  function minus( ) =
+    flush( )
+ in
+  for i := 0 to 10000 do
+    (
+      fact(10);
+      bar( );
+      foo( );
+      plus( );
+      minus( )
+    )
+end

@@ -1,0 +1,6 @@
+let
+ in
+  l := intlist{ hd = 3, tl = l };
+  t := tree{ key = 2, children = treelist{ hd = tree{ key = 3, children = nil }, tl = treelist{ hd = tree{ key = 4, children = nil }, tl = nil } } };
+  t.children.hd.children := t.children
+end

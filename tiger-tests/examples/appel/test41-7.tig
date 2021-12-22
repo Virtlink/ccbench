@@ -1,0 +1,4 @@
+let
+  type a = int
+ in
+end

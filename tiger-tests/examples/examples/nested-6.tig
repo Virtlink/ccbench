@@ -1,0 +1,7 @@
+let
+  var x : [[ID]] := 1
+  function f(y : int) : int =
+    x + y
+ in
+  x
+end

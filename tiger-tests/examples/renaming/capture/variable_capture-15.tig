@@ -1,0 +1,9 @@
+let
+  var bar := 10
+ in
+  let
+    var foo := 100
+   in
+    [[Exp]]
+  end
+end

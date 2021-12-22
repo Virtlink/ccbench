@@ -1,0 +1,9 @@
+let
+  function f( ) : int =
+    let
+     in
+      x + 1
+    end
+ in
+  f( )
+end

@@ -1,0 +1,9 @@
+let
+  function printnl([[FArg]]) =
+    (
+      print(x);
+      print("\n")
+    )
+ in
+  printnl("Hello World")
+end

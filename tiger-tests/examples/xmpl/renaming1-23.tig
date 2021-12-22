@@ -1,0 +1,13 @@
+let
+  var i := 1
+ in
+  (
+    let
+      var i := (
+                 i + [[IntConst]]
+               )
+     in
+      i
+    end + i
+  )
+end

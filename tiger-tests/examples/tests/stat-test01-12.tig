@@ -1,0 +1,7 @@
+let
+  var sum := 0
+  var n := 5
+ in
+  [[Exp]];
+  sum
+end

@@ -1,0 +1,7 @@
+let
+  var a := 0
+  function g( ) : int =
+    a
+ in
+  g(2)
+end

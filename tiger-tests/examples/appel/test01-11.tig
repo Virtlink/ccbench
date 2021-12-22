@@ -1,0 +1,6 @@
+let
+  type arrtype = array of int
+  var arr1 : arrtype := [[Exp]]
+ in
+  arr1[2]
+end

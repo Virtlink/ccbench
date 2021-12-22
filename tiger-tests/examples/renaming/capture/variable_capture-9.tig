@@ -1,0 +1,8 @@
+let
+  var bar := 10
+ in
+  let
+   in
+    bar + foo
+  end
+end

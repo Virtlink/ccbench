@@ -1,0 +1,4 @@
+let
+ in
+  list{ hd = 1, tl = list{ hd = 0, tl = nil } }
+end

@@ -1,0 +1,25 @@
+for i := 0 to 30 do
+  (
+    let
+      type intArray = array of int
+      type intArray2 = array of int
+      type intArray3 = array of int
+      type intArray4 = array of int
+      type intArray5 = array of int
+     in
+      let
+       in
+        let
+          var flags := intArray[5000] of 1
+          var flags2 := intArray[5000] of 1
+          var flags3 := intArray[5000] of 1
+          var flags4 := intArray[5000] of 1
+          var flags5 := intArray[5000] of 1
+         in
+          sieve(flags, 5000);
+          (
+          )
+        end
+      end
+    end
+  )

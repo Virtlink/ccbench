@@ -1,0 +1,9 @@
+let
+  type myrec = {
+                  x : int
+               }
+  var rec1 : myrec := myrec{ x = 1 }
+ in
+  rec1.x := [[Exp]];
+  rec1.x
+end

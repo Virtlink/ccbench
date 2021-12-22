@@ -1,0 +1,5 @@
+let
+  var cumsum := 0
+ in
+  [[Exp]]
+end

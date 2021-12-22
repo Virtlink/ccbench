@@ -1,0 +1,5 @@
+let
+  var x := [[IntConst]]
+ in
+  x
+end

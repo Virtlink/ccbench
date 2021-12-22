@@ -1,0 +1,9 @@
+let
+  function printnl( ) =
+    (
+      print(x);
+      print("\n")
+    )
+ in
+  printnl("Hello World")
+end

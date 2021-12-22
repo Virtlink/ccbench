@@ -1,0 +1,9 @@
+let
+  function printnl(x : string) =
+    (
+      [[ID]](x);
+      print("\n")
+    )
+ in
+  printnl("Hello World")
+end

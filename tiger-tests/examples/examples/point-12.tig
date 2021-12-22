@@ -1,0 +1,10 @@
+let
+  type point = {
+                  x : int, 
+                  y : [[ID]]
+               }
+  var origin : point := point{ x = 1, y = 2 }
+ in
+  origin.x;
+  origin := nil
+end

@@ -1,0 +1,9 @@
+let
+  var i : [[Type]] := 1
+ in
+  while i < 10 do
+    (
+      print(chr(i));
+      i := i + 1
+    )
+end

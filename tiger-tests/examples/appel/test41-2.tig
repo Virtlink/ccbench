@@ -1,0 +1,8 @@
+let
+ in
+  let
+    type a = string
+   in
+    0
+  end
+end

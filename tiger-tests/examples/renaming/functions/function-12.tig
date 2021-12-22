@@ -1,0 +1,8 @@
+let
+  function plus(a : int, b : [[Type]]) : int =
+    (
+      a + b
+    )
+ in
+  plus(1, 1)
+end

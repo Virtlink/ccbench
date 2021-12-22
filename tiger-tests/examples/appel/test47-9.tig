@@ -1,0 +1,7 @@
+let
+  type a = int
+  var b := [[Exp]]
+  type a = string
+ in
+  0
+end

@@ -1,0 +1,9 @@
+let
+  type myrec = {
+                  [[ID]] : int
+               }
+  var rec1 : myrec := myrec{ x = 1 }
+ in
+  rec1.x := 99;
+  rec1.x
+end

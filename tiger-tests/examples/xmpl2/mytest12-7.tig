@@ -1,0 +1,6 @@
+let
+  function f([[ID]] : int) : int =
+    0
+ in
+  f(f(0))
+end

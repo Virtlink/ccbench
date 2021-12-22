@@ -1,0 +1,10 @@
+let
+  type vector = array of int
+ in
+  let
+    var v1 : vector := vector[10] of 1
+   in
+    for i := 0 to 9 do
+      printi(v1[[[Exp]]])
+  end
+end

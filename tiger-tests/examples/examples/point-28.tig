@@ -1,0 +1,8 @@
+let
+  type point = {
+                  x : int, 
+                  y : int
+               }
+  var origin : point := point{ x = 1, y = 2 }
+ in
+end

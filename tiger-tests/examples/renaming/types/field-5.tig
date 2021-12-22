@@ -1,0 +1,6 @@
+let
+  type student = [[Type]]
+  var student1 : student := student{ name = "Alan Turing", age = 107 }
+ in
+  student1.name
+end

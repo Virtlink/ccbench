@@ -1,0 +1,10 @@
+let
+  function f( ) : int =
+    let
+      var x : int := [[IntConst]]
+     in
+      x + 1
+    end
+ in
+  f( )
+end

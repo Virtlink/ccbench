@@ -1,0 +1,17 @@
+let
+  function fact(n : int) : int =
+    let
+      var c := n < 1
+     in
+      if c then
+        1
+      else
+        let
+         in
+          c
+        end
+    end
+  var r := fact(10)
+ in
+  r
+end

@@ -1,0 +1,9 @@
+let
+  type rectype = {
+                    [[Field]], 
+                    id : int
+                 }
+  var b : rectype := nil
+ in
+  b := nil
+end

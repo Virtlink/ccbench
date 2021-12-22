@@ -1,0 +1,11 @@
+let
+  var x : int := 5
+  var [[ID]] : int := 1
+ in
+  for y := 1 to x do
+    (
+      f := f * y
+    )  ;
+  print("s");
+  print(chr(x))
+end

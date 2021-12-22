@@ -1,0 +1,13 @@
+for k := 0 to 30 do
+  (
+    for i := 0 to 200 do
+      let
+        [[Dec]]
+       in
+        let
+          var foo := - 99
+         in
+          cumsum := cumsum + 1
+        end
+      end
+  )

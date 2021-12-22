@@ -1,0 +1,12 @@
+let
+  var a := [[IntConst]]
+  var b := (
+             a := 2;
+             a
+           )
+ in
+  b := (
+         a := 2;
+         a
+       )
+end

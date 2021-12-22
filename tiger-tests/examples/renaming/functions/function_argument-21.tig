@@ -1,0 +1,9 @@
+let
+  function printnl(x : string) =
+    (
+      print(x);
+      print( )
+    )
+ in
+  printnl("Hello World")
+end

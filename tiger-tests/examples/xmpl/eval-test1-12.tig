@@ -1,0 +1,5 @@
+let
+  var x : int := 1
+ in
+  [[LValue]] + 2
+end

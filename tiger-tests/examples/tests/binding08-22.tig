@@ -1,0 +1,10 @@
+let
+  type list = {
+                 hd : int, 
+                 tl : list
+              }
+  function size(xs : list) : int =
+    [[Exp]]
+ in
+  list{ hd = 1, tl = list{ hd = 0, tl = nil } }
+end

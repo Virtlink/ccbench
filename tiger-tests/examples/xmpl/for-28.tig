@@ -1,0 +1,9 @@
+let
+  var i := 1
+  var j := i
+  type vec = array of int
+  var v : vec := vec[5] of 0
+ in
+  [[Exp]];
+  v[3]
+end

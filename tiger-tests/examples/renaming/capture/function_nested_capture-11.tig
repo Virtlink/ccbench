@@ -1,0 +1,14 @@
+let
+  function plus(a : int, [[ID]] : int) : int =
+    (
+      a + b;
+      let
+        function plus(d : int) : int =
+          a + d
+       in
+        plus(1)
+      end
+    )
+ in
+  plus(1, 1)
+end

@@ -1,0 +1,7 @@
+let
+  var x : int := 1
+  function f(y : int) : int =
+    [[Var]] + y
+ in
+  x
+end

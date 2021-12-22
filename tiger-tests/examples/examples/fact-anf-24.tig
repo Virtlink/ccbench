@@ -1,0 +1,11 @@
+let
+  function fact(n : int) : int =
+    let
+      var c := n < 1
+     in
+      [[Exp]]
+    end
+  var r := fact(10)
+ in
+  r
+end

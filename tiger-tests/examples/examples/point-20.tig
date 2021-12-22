@@ -1,0 +1,10 @@
+let
+  type point = {
+                  x : int, 
+                  y : int
+               }
+  var origin : point := point{ [[InitField]], y = 2 }
+ in
+  origin.x;
+  origin := nil
+end

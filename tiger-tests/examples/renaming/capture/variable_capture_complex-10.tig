@@ -1,0 +1,14 @@
+let
+  var a := 1
+ in
+  let
+    [[Dec]]
+   in
+    a := 2;
+    let
+      var a := 1
+     in
+      a + b
+    end
+  end
+end

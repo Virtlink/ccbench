@@ -1,0 +1,5 @@
+let
+  var x : int := [[Exp]]
+ in
+  x + 2
+end

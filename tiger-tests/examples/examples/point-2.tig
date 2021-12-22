@@ -1,0 +1,5 @@
+let
+ in
+  origin.x;
+  origin := nil
+end

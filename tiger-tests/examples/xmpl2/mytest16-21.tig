@@ -1,0 +1,9 @@
+let
+  function pred(x : int) : int =
+    1
+ in
+  if pred(1) then
+    [[Exp]]
+  else
+    2
+end

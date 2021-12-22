@@ -1,0 +1,6 @@
+if (
+     [[Exp]]
+   ) then
+  30
+else
+  40

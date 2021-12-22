@@ -1,0 +1,11 @@
+let
+  var i := 1
+ in
+  (
+    let
+      var i := [[Exp]]
+     in
+      i
+    end + i
+  )
+end

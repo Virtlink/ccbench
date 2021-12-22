@@ -1,0 +1,6 @@
+let
+  [[Dec]]
+ in
+  while count > - 1 do
+    break
+end

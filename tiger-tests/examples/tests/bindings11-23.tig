@@ -1,0 +1,9 @@
+let
+  type point = {
+                  x : int, 
+                  y : int
+               }
+  var p := point{ x = 1, [[ID]] = 10 }
+ in
+  p.y
+end

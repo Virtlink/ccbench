@@ -1,0 +1,9 @@
+let
+  type point = {
+                  x : int, 
+                  y : int
+               }
+  var p := point{ x = 1, [[InitField]] }
+ in
+  p.y
+end

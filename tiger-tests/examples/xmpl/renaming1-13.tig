@@ -1,0 +1,11 @@
+let
+  var i := 1
+ in
+  (
+    let
+      [[Dec]]
+     in
+      i
+    end + i
+  )
+end

@@ -1,0 +1,6 @@
+let
+  function [[ID]](x : int) : int =
+    x + 1
+ in
+  f(f(3))
+end

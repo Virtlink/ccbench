@@ -1,0 +1,6 @@
+let
+  function f(x : int) : int =
+    [[Var]] + 1
+ in
+  f(f(3))
+end

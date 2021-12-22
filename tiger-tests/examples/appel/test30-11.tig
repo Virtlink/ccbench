@@ -1,0 +1,7 @@
+let
+  type a = array of int
+  type b = a
+  [[Dec]]
+ in
+  arr1[2]
+end

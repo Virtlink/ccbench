@@ -1,0 +1,7 @@
+let
+  type a = int
+  var [[ID]] := 4
+  type a = string
+ in
+  0
+end

@@ -1,0 +1,11 @@
+let
+  function inttostring(n : int) : string =
+    if n < [[Exp]] then
+      chr(48 + n)
+    else
+      concat(inttostring(n / 10), inttostring((
+        n / 10
+      )))
+ in
+  inttostring(10)
+end

@@ -1,0 +1,11 @@
+let
+  function f(i : int) : int =
+    let
+      function g(i : int) : int =
+        i
+     in
+      [[Var]] + g(i)
+    end
+ in
+  f(10)
+end

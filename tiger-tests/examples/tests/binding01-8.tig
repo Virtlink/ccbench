@@ -1,0 +1,6 @@
+let
+  var x := "1"
+  var [[ID]] := 2
+ in
+  x + x
+end

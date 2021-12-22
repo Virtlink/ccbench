@@ -1,0 +1,8 @@
+let
+ in
+  let
+    var t : tree := node("a", node("b", nil, nil), node("c", nil, node("d", nil, nil)))
+   in
+    prettyprint(t)
+  end
+end

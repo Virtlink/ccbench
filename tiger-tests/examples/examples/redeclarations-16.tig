@@ -1,0 +1,9 @@
+let
+  function f(v : string) =
+    let
+      var v := "6"
+     in
+    end
+ in
+  f("4")
+end

@@ -1,0 +1,7 @@
+let
+  [[Dec]]
+  function g(a : int) : int =
+    a
+ in
+  g(2)
+end

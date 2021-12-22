@@ -1,0 +1,8 @@
+let
+  var x := 0
+  function fact(n : int) : int =
+    [[Exp]]
+ in
+  for i := 1 to 3 do
+    x := x + fact(i)
+end

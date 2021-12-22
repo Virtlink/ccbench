@@ -1,0 +1,6 @@
+let
+  var count := [[IntConst]]
+ in
+  while count > - 1 do
+    break
+end

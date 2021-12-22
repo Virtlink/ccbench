@@ -1,0 +1,10 @@
+let
+  function f( ) : int =
+    let
+      [[Dec]]
+     in
+      x + 1
+    end
+ in
+  f( )
+end

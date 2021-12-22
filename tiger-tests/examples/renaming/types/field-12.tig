@@ -1,0 +1,9 @@
+let
+  type student = {
+                    name : string, 
+                    age : [[ID]]
+                 }
+  var student1 : student := student{ name = "Alan Turing", age = 107 }
+ in
+  student1.name
+end

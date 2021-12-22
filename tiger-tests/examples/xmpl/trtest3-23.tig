@@ -1,0 +1,8 @@
+let
+  var x := 3
+ in
+  while x < 5 do
+    (
+      x := [[Exp]] + 1
+    )
+end

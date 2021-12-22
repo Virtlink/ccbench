@@ -1,0 +1,13 @@
+let
+  function plus(a : int, b : int) : int =
+    (
+      a + b;
+      let
+        [[Dec]]
+       in
+        plus(1, 1)
+      end
+    )
+ in
+  plus(1, 1)
+end

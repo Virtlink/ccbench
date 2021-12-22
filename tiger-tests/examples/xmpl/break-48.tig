@@ -1,0 +1,19 @@
+let
+  function mod(i : int, j : int) : int =
+    i - (
+          (
+            i / j
+          ) * j
+        )
+  function inttostring(n : int) : string =
+    [[Exp]]
+  var x := 1
+ in
+  while x < 10 do
+    (
+      x := x + 1;
+      print(inttostring(x));
+      break
+    )  ;
+  print(inttostring(x))
+end

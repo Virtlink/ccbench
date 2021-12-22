@@ -1,0 +1,13 @@
+let
+  function plus(a : int, b : int) : int =
+    (
+      a + b;
+      let
+        function plus(d : int) : int =
+          a + d
+       in
+      end
+    )
+ in
+  plus(1, 1)
+end

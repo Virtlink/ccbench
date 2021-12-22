@@ -1,0 +1,12 @@
+for i := 0 to 30 do
+  (
+    let
+     in
+      buildTowerAt(0, 13);
+      movesDone := 0;
+      moveDisks(13, 0, 1);
+      movesDone;
+      (
+      )
+    end
+  )

@@ -1,0 +1,9 @@
+let
+  type vector = array of int
+ in
+  let
+    var v1 : vector := vector[10] of 1
+   in
+    [[Exp]]
+  end
+end

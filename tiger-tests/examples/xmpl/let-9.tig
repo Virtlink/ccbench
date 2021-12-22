@@ -1,0 +1,7 @@
+let
+  var x : int := 1
+  [[Dec]]
+  var y : int := x + 1
+ in
+  x + y + z
+end

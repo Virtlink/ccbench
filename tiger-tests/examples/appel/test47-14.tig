@@ -1,0 +1,7 @@
+let
+  type a = int
+  var b := 4
+  type a = [[ID]]
+ in
+  0
+end

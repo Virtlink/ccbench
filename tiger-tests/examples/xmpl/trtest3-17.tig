@@ -1,0 +1,7 @@
+let
+  var x := 3
+ in
+  while x < 5 do
+    (
+    )
+end

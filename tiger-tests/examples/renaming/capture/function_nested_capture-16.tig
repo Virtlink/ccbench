@@ -1,0 +1,6 @@
+let
+  function plus(a : int, b : int) : int =
+    [[Exp]]
+ in
+  plus(1, 1)
+end

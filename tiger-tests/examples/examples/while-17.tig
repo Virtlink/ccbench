@@ -1,0 +1,9 @@
+let
+  var i : int := 1
+ in
+  while i < [[IntConst]] do
+    (
+      print(chr(i));
+      i := i + 1
+    )
+end

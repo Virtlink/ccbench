@@ -1,0 +1,9 @@
+let
+  type student = {
+                    name : string, 
+                    age : int
+                 }
+  [[Dec]]
+ in
+  student1.name
+end

@@ -1,0 +1,5 @@
+let
+  var x : [[Type]] := 1
+ in
+  x + 2
+end

@@ -1,0 +1,5 @@
+let
+ in
+  for x := x to y + 1 do
+    x := f(x + 1)
+end

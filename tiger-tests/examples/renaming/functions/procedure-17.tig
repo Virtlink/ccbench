@@ -1,0 +1,9 @@
+let
+  function printnl(x : string) =
+    (
+      print([[Var]]);
+      print("\n")
+    )
+ in
+  printnl("Hello World")
+end

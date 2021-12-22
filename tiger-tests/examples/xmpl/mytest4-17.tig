@@ -1,0 +1,9 @@
+let
+  function f(x : int, z : int) : int =
+    let
+     in
+      g(x)
+    end
+ in
+  f(4, 6)
+end

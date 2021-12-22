@@ -1,0 +1,6 @@
+for i := 1 to [[IntConst]] do
+  (
+    for j := 2 to 3 do
+      break  ;
+    break
+  )

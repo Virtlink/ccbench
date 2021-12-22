@@ -1,0 +1,10 @@
+let
+ in
+  while x < 10 do
+    (
+      x := x + 1;
+      print(inttostring(x));
+      break
+    )  ;
+  print(inttostring(x))
+end

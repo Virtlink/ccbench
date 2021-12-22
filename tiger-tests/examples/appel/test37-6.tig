@@ -1,0 +1,6 @@
+let
+  var a := [[IntConst]]
+  var a := " "
+ in
+  0
+end

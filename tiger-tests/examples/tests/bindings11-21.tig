@@ -1,0 +1,9 @@
+let
+  type point = {
+                  x : int, 
+                  y : int
+               }
+  var p := point{ x = [[IntConst]], y = 10 }
+ in
+  p.y
+end

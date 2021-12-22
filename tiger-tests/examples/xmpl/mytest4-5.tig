@@ -1,0 +1,13 @@
+let
+  function f( ) : int =
+    let
+      function g(y : int) : int =
+        (
+          x + y
+        ) - z
+     in
+      g(x)
+    end
+ in
+  f(4, 6)
+end

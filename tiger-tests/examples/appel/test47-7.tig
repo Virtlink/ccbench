@@ -1,0 +1,7 @@
+let
+  type a = int
+  [[Dec]]
+  type a = string
+ in
+  0
+end

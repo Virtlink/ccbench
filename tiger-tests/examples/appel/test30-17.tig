@@ -1,0 +1,7 @@
+let
+  type a = array of int
+  type b = a
+  var arr1 : a := b[[[Exp]]] of 0
+ in
+  arr1[2]
+end

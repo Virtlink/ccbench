@@ -1,0 +1,12 @@
+let
+  var i := 1
+ in
+  (
+    let
+      var i := (
+               )
+     in
+      i
+    end + i
+  )
+end

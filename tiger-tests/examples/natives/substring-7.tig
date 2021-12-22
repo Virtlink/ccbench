@@ -1,0 +1,1 @@
+substring("martijn", [[IntConst]], 2)

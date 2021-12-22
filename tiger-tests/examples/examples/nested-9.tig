@@ -1,0 +1,6 @@
+let
+  var x : int := 1
+  [[Dec]]
+ in
+  x
+end

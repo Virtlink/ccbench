@@ -1,0 +1,6 @@
+let
+  var a := 0
+  [[Dec]]
+ in
+  0
+end

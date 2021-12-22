@@ -1,0 +1,9 @@
+let
+  function pred(x : int) : int =
+    [[IntConst]]
+ in
+  if pred(1) then
+    1
+  else
+    2
+end

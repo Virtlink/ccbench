@@ -1,0 +1,8 @@
+let
+  var sum := 0
+  var n := 5
+ in
+  for x := [[IntConst]] to n do
+    sum := sum + x  ;
+  sum
+end

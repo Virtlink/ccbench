@@ -1,0 +1,8 @@
+for i := 0 to 30 do
+  (
+    let
+      var counter := 0
+      var counter2 := 0
+     in
+    end
+  )

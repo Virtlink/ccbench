@@ -1,0 +1,10 @@
+let
+  type R = {
+              f : int
+           }
+  var r : R := nil
+  [[Dec]]
+ in
+  r.f;
+  q.f
+end

@@ -1,0 +1,14 @@
+let
+  type foo = {
+             }
+  function foo(foo : foo) =
+    (
+      let
+        var foo := foo.foo
+       in
+        print(foo)
+      end
+    )
+ in
+  foo(foo{ foo = "foo" })
+end

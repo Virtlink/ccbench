@@ -1,0 +1,9 @@
+let
+  var a := 1
+  var b := [[Exp]]
+ in
+  b := (
+         a := 2;
+         a
+       )
+end

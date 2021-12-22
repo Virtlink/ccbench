@@ -1,0 +1,6 @@
+let
+  function f( ) : int =
+    [[Exp]]
+ in
+  f( )
+end

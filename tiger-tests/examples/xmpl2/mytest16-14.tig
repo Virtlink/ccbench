@@ -1,0 +1,5 @@
+let
+  function pred(x : int) : int =
+    1
+ in
+end

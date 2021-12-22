@@ -1,0 +1,9 @@
+let
+  type a = int
+ in
+  let
+    [[Dec]]
+   in
+    0
+  end
+end

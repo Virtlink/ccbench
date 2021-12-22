@@ -1,0 +1,7 @@
+let
+  var a := 0
+  function g([[ID]] : int) : int =
+    a
+ in
+  g(2)
+end

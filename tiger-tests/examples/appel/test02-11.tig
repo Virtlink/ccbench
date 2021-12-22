@@ -1,0 +1,7 @@
+let
+  type myint = int
+  type arrtype = array of myint
+  [[Dec]]
+ in
+  arr1
+end

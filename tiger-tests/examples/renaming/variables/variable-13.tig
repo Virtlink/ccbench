@@ -1,0 +1,5 @@
+let
+  var msg : string := "Hello World"
+ in
+  print([[Exp]])
+end

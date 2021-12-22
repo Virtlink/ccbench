@@ -1,0 +1,6 @@
+let
+  type rectype = [[Type]]
+  var b : rectype := nil
+ in
+  b := nil
+end

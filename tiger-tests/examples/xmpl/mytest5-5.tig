@@ -1,0 +1,13 @@
+let
+  var x := [[Exp]]
+  function fact(n : int) : int =
+    if n < 1 then
+      1
+    else
+      (
+        n * fact(n - 1)
+      )
+ in
+  for i := 1 to 3 do
+    x := x + fact(i)
+end

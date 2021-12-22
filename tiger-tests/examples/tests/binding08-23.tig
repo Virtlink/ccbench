@@ -1,0 +1,13 @@
+let
+  type list = {
+                 hd : int, 
+                 tl : list
+              }
+  function size(xs : list) : int =
+    if [[Exp]] then
+      0
+    else
+      1 + size(xs.tl)
+ in
+  list{ hd = 1, tl = list{ hd = 0, tl = nil } }
+end

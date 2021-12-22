@@ -1,0 +1,12 @@
+for i := 0 to 30 do
+  (
+    let
+      type vector = array of int
+      type vector2 = array of int
+      type vector3 = array of int
+      type vector4 = array of int
+      type vector5 = array of int
+     in
+      [[Exp]]
+    end
+  )

@@ -1,0 +1,11 @@
+let
+  var sum : int := [[IntConst]]
+  var n : int := 5
+ in
+  while n > 0 do
+    (
+      sum := sum + n;
+      n := n - 1
+    )  ;
+  sum
+end

@@ -1,0 +1,14 @@
+let
+  function plus(a : int, b : int) : int =
+    (
+      a + [[LValue]];
+      let
+        function plus(a : int, b : int) : int =
+          a + b
+       in
+        plus(1, 1)
+      end
+    )
+ in
+  plus(1, 1)
+end

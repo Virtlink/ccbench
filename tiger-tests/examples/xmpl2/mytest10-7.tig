@@ -1,0 +1,4 @@
+(
+  print([[StrConst]]);
+  exit(0)
+)

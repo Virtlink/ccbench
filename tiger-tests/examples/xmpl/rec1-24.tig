@@ -1,0 +1,8 @@
+let
+  type R = {
+              f : int
+           }
+  var r : R := nil
+  var q := R{ f = 1 }
+ in
+end

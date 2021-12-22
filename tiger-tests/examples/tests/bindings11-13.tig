@@ -1,0 +1,9 @@
+let
+  type point = {
+                  x : int, 
+                  y : int
+               }
+  [[Dec]]
+ in
+  p.y
+end

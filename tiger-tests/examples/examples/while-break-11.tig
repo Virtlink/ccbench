@@ -1,0 +1,6 @@
+let
+  var count := 0
+ in
+  while [[LValue]] > - 1 do
+    break
+end

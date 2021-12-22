@@ -1,0 +1,6 @@
+let
+  var count := [[Exp]]
+ in
+  while count > - 1 do
+    break
+end

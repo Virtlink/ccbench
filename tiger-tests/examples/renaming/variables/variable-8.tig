@@ -1,0 +1,5 @@
+let
+  var msg : string := [[StrConst]]
+ in
+  print(msg)
+end

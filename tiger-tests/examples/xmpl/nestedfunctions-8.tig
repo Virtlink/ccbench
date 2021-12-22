@@ -1,0 +1,12 @@
+let
+  var x := 1
+ in
+  [[Exp]];
+  let
+    var y := 3
+   in
+    (
+      x + 6
+    ) + y
+  end
+end

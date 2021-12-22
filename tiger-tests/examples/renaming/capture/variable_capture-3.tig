@@ -1,0 +1,9 @@
+let
+  [[Dec]]
+ in
+  let
+    var foo := 100
+   in
+    bar + foo
+  end
+end

@@ -1,0 +1,30 @@
+let
+  type tree = {
+                 key : string, 
+                 left : tree, 
+                 right : tree
+              }
+  function prettyprint(tree : tree) : string =
+    let
+      var output := ""
+      function write(s : string) =
+        output := concat(output, s)
+      [[Dec]]
+     in
+      show(0, tree);
+      output
+    end
+  function node(x : string, l : tree, r : tree) : tree =
+    tree{ key = x, left = l, right = r }
+  function printnl(x : string) =
+    (
+      print(x);
+      print("\n")
+    )
+ in
+  let
+    var t : tree := node("a", node("b", nil, nil), node("c", nil, node("d", nil, nil)))
+   in
+    prettyprint(t)
+  end
+end
