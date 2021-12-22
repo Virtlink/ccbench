@@ -40,7 +40,7 @@ From the repository root directory:
   run tiger-laptop \
   -p tiger-files/ \
   -i tiger-tests/Tiger.yml \
-  -o tiger-results/
+  -o tiger-results/ \
   -w 100 \
   --seed 12345
 ```
