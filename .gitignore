@@ -110,6 +110,8 @@ src-gen/
 
 ## Misc
 /generated/
+/tiger-files2/
+/chocopy-files2/
 #/tiger-tests/
 #/chocopy-tests/
 /tiger-results/

@@ -14,6 +14,8 @@ import mb.spoofax.core.platform.DaggerPlatformComponent
 import mb.chocopy.DaggerChocopyComponent
 import mb.chocopy.DaggerChocopyResourcesComponent
 import mb.chocopy.ChocopyModule
+import mb.rv32im.DaggerRv32ImComponent
+import mb.rv32im.DaggerRv32ImResourcesComponent
 
 fun main(args: Array<String>) {
     val loggerComponent = DaggerBenchLoggerComponent.builder()
@@ -38,12 +40,23 @@ fun main(args: Array<String>) {
         .resourceServiceComponent(resourceServiceComponent)
         .build()
 
+    val rv32ImResourcesComponent = DaggerRv32ImResourcesComponent.builder()
+        .build()
+
+    val rv32ImComponent = DaggerRv32ImComponent.builder()
+        .loggerComponent(loggerComponent)
+        .rv32ImResourcesComponent(rv32ImResourcesComponent)
+        .resourceServiceComponent(resourceServiceComponent)
+        .platformComponent(platformComponent)
+        .build()
+
     val languageComponent = DaggerChocopyComponent.builder()
         .chocopyModule(ChocopyModule())
         .loggerComponent(loggerComponent)
         .chocopyResourcesComponent(resourcesComponent)
         .resourceServiceComponent(resourceServiceComponent)
         .platformComponent(platformComponent)
+        .rv32ImComponent(rv32ImComponent)
         .build()
 
     // PIE

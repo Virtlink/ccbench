@@ -7,6 +7,6 @@ import javax.inject.Inject
 class ChocopyBuildBenchmarkCommand @Inject constructor(
     benchmarkBuilder: ChocopyBenchmarkBuilder
 ) : BuildBenchmarkCommand(
-    ".tig",
+    ".py",
     benchmarkBuilder
 )
