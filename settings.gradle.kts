@@ -6,5 +6,5 @@ include("ccbench.chocopy")
 //include("ccbench.webdsl")
 include("ccbench.platform")
 
-includeBuild("../devenv")
+//includeBuild("../devenv")
 includeBuild("../chocopy-grading-2021")
