@@ -1,23 +1,23 @@
 # CCBench
-
 This performs a code completion benchmark test. The inputs are files of the test language (Tiger, WebDSL), with a placeholder somewhere in the file, and the cursor offset of the placeholder to be completed.
 
 For each completion, it measures the time from invocation until getting results. We may or may not have to include the time required for parsing and initial analysis.
 
 ## Build
-This project depends on several Spoofax 3 projects. Easiest is to include the [Spoofax 3][1] `devenv` as an included build when building on the command line:
+This project depends on several Spoofax 3 projects:
+- `devenv`
+- `tiger`
+- `chocopy`
+
+
+
+Easiest is to include the [Spoofax 3][1] `devenv` as an included build when building on the command line:
 
 ```sh
-./gradlew --include-build ../devenv build 
+./gradlew build installDist --include-build ../devenv
 ```
 
-To create an installation of this project:
-
-```sh
-./gradlew --include-build ../devenv installDist
-```
-
-Or add this line to `settings.gradle.kts`:
+Alternatively, add this line to `settings.gradle.kts`:
 
 ```kotlin
 includeBuild("../devenv")

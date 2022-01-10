@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-val metaborgTigerVersion = "latest.integration"
+val metaborgTigerVersion        = "0.16.15"   // "latest.integration"
 //val metaborgTigerVersion = "10.0.0-cc2109-SNAPSHOT"
 
 dependencies {

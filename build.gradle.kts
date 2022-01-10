@@ -33,6 +33,23 @@ allprojects {
     }
 }
 
+
+val spoofax3Version             = "0.16.15"   // "latest.integration"
+val slf4jVersion                = "1.7.30"
+val logbackVersion              = "1.2.6"
+val microutilsLoggingVersion    = "2.0.11"
+val daggerVersion               = "2.36"
+val progressbarVersion          = "0.9.2"
+val cliktVersion                = "3.2.0"
+val mordantVersion              = "2.0.0-beta3"
+val commonsCsvVersion           = "1.9.0"
+val jacksonVersion              = "2.13.0"
+val jfreechartVersion           = "1.5.3"
+val jfreePdfVersion             = "2.0"
+val commonsIoVersion            = "2.8.0"
+val commonsMathVersion          = "3.6.1"
+val junitVersion                = "5.8.1"
+
 configure(subprojects.filter { "ccbench.platform" !in it.name }) {
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
@@ -41,12 +58,19 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
 
     dependencies {
         // Platform
-        implementation(platform(project(":ccbench.platform")))
-        api(platform(project(":ccbench.platform")))
-        kapt(platform(project(":ccbench.platform")))
-        testImplementation(platform(project(":ccbench.platform")))
-        testRuntimeOnly(platform(project(":ccbench.platform")))
+        implementation(platform("org.metaborg:spoofax.depconstraints:$spoofax3Version"))
+        api(platform("org.metaborg:spoofax.depconstraints:$spoofax3Version"))
+        kapt(platform("org.metaborg:spoofax.depconstraints:$spoofax3Version"))
+        testImplementation(platform("org.metaborg:spoofax.depconstraints:$spoofax3Version"))
+        testRuntimeOnly(platform("org.metaborg:spoofax.depconstraints:$spoofax3Version"))
         implementation(kotlin("stdlib"))
+
+//        implementation(platform(project(":ccbench.platform")))
+//        api(platform(project(":ccbench.platform")))
+//        kapt(platform(project(":ccbench.platform")))
+//        testImplementation(platform(project(":ccbench.platform")))
+//        testRuntimeOnly(platform(project(":ccbench.platform")))
+//        implementation(kotlin("stdlib"))
 
         // Spoofax
         implementation("org.metaborg:statix.codecompletion.pie")
@@ -63,9 +87,9 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
         implementation("org.metaborg:resource")
 
         // Logging
-        implementation("ch.qos.logback:logback-classic")
-        implementation("ch.qos.logback:logback-core")
-        implementation("io.github.microutils:kotlin-logging-jvm")
+        implementation("ch.qos.logback:logback-classic:$logbackVersion")
+        implementation("ch.qos.logback:logback-core:$logbackVersion")
+        implementation("io.github.microutils:kotlin-logging-jvm:$microutilsLoggingVersion")
 
         // Dependency Injection
         implementation("com.google.dagger:dagger")
@@ -73,29 +97,29 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
         kapt("com.google.dagger:dagger-compiler")
 
         // CLI
-        implementation("me.tongfei:progressbar")
-        implementation("com.github.ajalt.clikt:clikt")
-        implementation("com.github.ajalt.mordant:mordant:2.0.0-beta3")
+        implementation("me.tongfei:progressbar:$progressbarVersion")
+        implementation("com.github.ajalt.clikt:clikt:$cliktVersion")
+        implementation("com.github.ajalt.mordant:mordant:$mordantVersion")
 
         // CSV
-        implementation("org.apache.commons:commons-csv")
+        implementation("org.apache.commons:commons-csv:$commonsCsvVersion")
 
         // YAML
-        implementation("com.fasterxml.jackson.core:jackson-databind")
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+        implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
 
         // Charts
-        implementation("org.jfree:jfreechart")
-        implementation("org.jfree:org.jfree.pdf")
+        implementation("org.jfree:jfreechart:$jfreechartVersion")
+        implementation("org.jfree:org.jfree.pdf:$jfreePdfVersion")
 
         // Utils
         implementation("commons-io:commons-io")
-        implementation("org.apache.commons:commons-math3")
+        implementation("org.apache.commons:commons-math3:$commonsMathVersion")
 
         // Testing
-        testImplementation("org.junit.jupiter:junit-jupiter-api")
-        testRuntimeOnly   ("org.junit.jupiter:junit-jupiter-engine")
+        testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+        testRuntimeOnly   ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     }
 
     tasks.getByName<Test>("test") {
