@@ -34,7 +34,8 @@ allprojects {
 }
 
 
-val spoofax3Version             = "0.16.15"   // "latest.integration"
+val spoofax3Version             = "0.16.17"   // "latest.integration"
+//val spoofax3Version             = "0.16.15"   // "latest.integration"
 val slf4jVersion                = "1.7.30"
 val logbackVersion              = "1.2.6"
 val microutilsLoggingVersion    = "2.0.11"
@@ -72,14 +73,16 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
 //        testRuntimeOnly(platform(project(":ccbench.platform")))
 //        implementation(kotlin("stdlib"))
 
+
         // Spoofax
         implementation("org.metaborg:statix.codecompletion.pie")
         implementation("org.metaborg:statix.codecompletion")
         implementation("org.metaborg:jsglr.pie")
+//        api("org.metaborg:gpp")
         implementation("org.metaborg.devenv:org.spoofax.terms")
         implementation("org.metaborg.devenv:nabl2.terms")
         implementation("org.metaborg.devenv:statix.solver")
-        implementation(files("../libs/strategolib.jar"))
+        //implementation(files("../libs/strategolib.jar"))
         implementation("org.metaborg:pie.api")
         implementation("org.metaborg:pie.runtime")
         implementation("org.metaborg:pie.dagger")

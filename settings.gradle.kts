@@ -1,9 +1,17 @@
 rootProject.name = "ccbench"
 
+pluginManagement {
+    repositories {
+        maven("https://artifacts.metaborg.org/content/groups/public/")
+    }
+}
+
 include("ccbench.core")
 include("ccbench.tiger")
-//include("ccbench.chocopy")
+include("ccbench.chocopy")
 //include("ccbench.webdsl")
 
-//includeBuild("../devenv-220110")
-//includeBuild("../chocopy-grading-2021")
+includeBuild("../devenv")
+includeBuild("../chocopy-grading-2021")
+
+
