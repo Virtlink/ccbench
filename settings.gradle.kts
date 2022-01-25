@@ -6,6 +6,7 @@ pluginManagement {
     }
 }
 
+include("spree")
 include("ccbench.core")
 include("ccbench.tiger")
 include("ccbench.chocopy")
