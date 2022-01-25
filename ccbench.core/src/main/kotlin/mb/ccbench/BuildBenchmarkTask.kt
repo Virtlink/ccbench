@@ -13,8 +13,8 @@ import mb.nabl2.terms.stratego.TermOrigin
 import mb.pie.api.*
 import mb.resource.hierarchical.ResourcePath
 import mb.resource.text.TextResourceRegistry
+import mb.spree.green.TreePath
 import mb.stratego.common.StrategoRuntime
-import mb.stratego.pie.GetStrategoRuntimeProvider
 import me.tongfei.progressbar.ProgressBar
 import mu.KotlinLogging
 import org.spoofax.interpreter.terms.*
@@ -73,18 +73,18 @@ abstract class BuildBenchmarkTask(
     fun run(pie: Pie, projectDir: Path, inputFile: Path, testCaseDir: Path, sample: Int?, rnd: Random): List<TestCase> {
         pie.newSession().use { session ->
             val topDownSession = session.updateAffectedBy(emptySet())
-            return try {
-                topDownSession.require(this.createTask(Input(projectDir, inputFile, testCaseDir, sample, rnd))).toList()
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                emptyList()
-            }
+            return topDownSession.require(this.createTask(Input(projectDir, inputFile, testCaseDir, sample, rnd))).toList()
+//            } catch (ex: Exception) {
+//                ex.printStackTrace()
+//                emptyList()
+//            }
         }
     }
 
     override fun getId(): String = BuildBenchmarkTask::class.java.name
 
     override fun exec(ctx: ExecContext, input: Input): ListView<TestCase> {
+        val prettyPrintMode = PrettyPrintingMode.All
         val runtime = strategoRuntimeProvider.get()
 //        val runtime = ctx.require<None, OutTransient<Provider<StrategoRuntime>>>(getStrategoRuntimeProviderTaskDef, None.instance).getValue().get()
 
@@ -96,7 +96,7 @@ abstract class BuildBenchmarkTask(
         val ast: IStrategoTerm
         try {
             // Parse the input
-            ast = parseTaskDef.runParse(ctx, inputResource.key)
+            ast = parseTaskDef.runParse(ctx, inputResource.key, inputResource.key)
         } catch (ex: Exception) {
             log.warn { "Failed to parse $originalName" }
             ex.printStackTrace()
@@ -128,11 +128,15 @@ abstract class BuildBenchmarkTask(
             return ListView.of()
         }
 
-        // We pretty-print and parse the input resource again here, such that are sure
-        // that the offset of the term is the same in the incomplete pretty-printed AST
-        val pp = prettyPrint(runtime, ast)
-        val ppResource = textResourceRegistry.createResource(pp)
-        val ppAst = parseTaskDef.runParse(ctx, ppResource.key)
+        val ppAst = if (prettyPrintMode == PrettyPrintingMode.All) {
+            // We pretty-print and parse the input resource again here, such that are sure
+            // that the offset of the term is the same in the incomplete pretty-printed AST
+            val ppStr = prettyPrint(runtime, ast)
+            val ppResource = textResourceRegistry.createResource(ppStr)
+            parseTaskDef.runParse(ctx, ppResource.key, inputResource.key)
+        } else {
+            ast
+        }
         val explicatedAst = explicate(runtime, ppAst)
 
         // Get all possible incomplete ASTs
@@ -140,7 +144,23 @@ abstract class BuildBenchmarkTask(
 
         // Downgrade the placeholders in the incomplete ASTs, and pretty-print them
         val prettyPrintedAsts = incompleteAsts.mapNotNull { it.map { term ->
-            prettyPrint(runtime, implicate(runtime, downgrade(runtime, term)))
+            if (prettyPrintMode == PrettyPrintingMode.All) {
+                prettyPrint(runtime, implicate(runtime, downgrade(runtime, term)))
+            } else {
+                // Get the downgraded placeholder term (so we know the Sort)
+                val placeholderTerm = downgrade(runtime, term).resolve(it.placeholderPath)
+                val placeholderRepr = if (prettyPrintMode == PrettyPrintingMode.OnlyPlaceholder) {
+                    // pretty-print it (so we know its representation)
+                    prettyPrint(runtime, placeholderTerm)
+                } else {
+                    // think of a substitute representation
+                    val sort = getSortFromPlaceholderTerm(placeholderTerm)
+                    "[[$sort]]"
+                }
+                // and replace it in the original text
+                val inputString = inputResource.readString()
+                inputString.substring(0, it.startOffset) + placeholderRepr + inputString.substring(it.endOffset)
+            }
         } }
 
         // Construct test cases and write the files to the test cases directory
@@ -193,13 +213,23 @@ abstract class BuildBenchmarkTask(
      * @return a sequence of all possible variants of this term with a placeholder
      */
     private fun buildIncompleteAsts(term: IStrategoTerm, factory: ITermFactory): List<TestCaseInfo<IStrategoTerm>> {
-        // Replaced the term with a placeholder
-        val isLiteral = term.type == TermType.STRING
-        return listOf(TestCaseInfo(makePlaceholder("x", factory), 0 /* getStartOffset(term)*/, term, isLiteral)) +
-                // or replaced a subterm with all possible sub-asts with a placeholder
-                term.subterms.flatMapIndexed { i, subTerm ->
-                    buildIncompleteAsts(subTerm, factory).map { (newSubTerm, offset, expectedAst, expectsLiteral) -> TestCaseInfo(term.withSubterm(i, newSubTerm, factory), offset, expectedAst, expectsLiteral) }
-                }
+        // Replace the term with a placeholder
+        val placeholderTerm = makePlaceholder("x", factory)
+        val thisTestCase = TestCaseInfo(
+            placeholderTerm,
+            placeholderTerm,
+            TreePath.empty(),
+            getStartOffsetRecursive(term),
+            getEndOffsetRecursive(term),
+            term,
+            expectsLiteral = (term.type == TermType.STRING)
+        )
+        // or replace a subterm with all possible sub-asts with a placeholder
+        return listOf(thisTestCase) + term.subterms.flatMapIndexed { i, subTerm ->
+            buildIncompleteAsts(subTerm, factory).map { (newSubTerm, placeholderTerm, placeholderPath, startOffset, endOffset, expectedAst, expectsLiteral) ->
+                TestCaseInfo(term.withSubterm(i, newSubTerm, factory), placeholderTerm, placeholderPath.prepend(i), startOffset, endOffset, expectedAst, expectsLiteral)
+            }
+        }
     }
 
     /**
@@ -314,7 +344,7 @@ abstract class BuildBenchmarkTask(
      * @param term the term
      * @return the term's start offset
      */
-    private fun getStartOffset(term: IStrategoTerm): Int = tryGetStartOffset(term)!!
+    private fun getStartOffset(term: IStrategoTerm): Int = tryGetStartOffset(term) ?: throw NullPointerException("Could not determine start offset of term: $term")
 
     /**
      * Attempts to get the start offset the specified term.
@@ -330,23 +360,124 @@ abstract class BuildBenchmarkTask(
     }
 
     /**
+     * Gets the end offset the specified term.
+     *
+     * @param term the term
+     * @return the term's end offset
+     */
+    private fun getEndOffset(term: IStrategoTerm): Int = tryGetEndOffset(term) ?: throw NullPointerException("Could not determine end offset of term: $term")
+
+    /**
+     * Attempts to get the end offset the specified term.
+     *
+     * @param term the term
+     * @return the term's end offset; or `null` when it could not be determined
+     */
+    private fun tryGetEndOffset(term: IStrategoTerm): Int? {
+        val origin = TermOrigin.get(term).orElse(null) ?: return null
+        val imploderAttachment = origin.imploderAttachment
+        // We get the zero-based offset just after the last character in the token
+        return imploderAttachment.rightToken.endOffset + 1
+    }
+
+    /**
+     * Gets the start offset the specified term or a descendant left-most term.
+     *
+     * @param term the term
+     * @return the term's start offset
+     */
+    private fun getStartOffsetRecursive(term: IStrategoTerm): Int = tryGetStartOffsetRecursive(term) ?: throw NullPointerException("Could not determine start offset of term: $term")
+
+    /**
+     * Attempts to get the start offset the specified term or a descendant left-most term.
+     *
+     * @param term the term
+     * @return the term's start offset; or `null` when it could not be determined
+     */
+    private fun tryGetStartOffsetRecursive(term: IStrategoTerm): Int? {
+        var currentTerm: IStrategoTerm = term
+        while (true) {
+            val startOffset = tryGetStartOffset(currentTerm)
+            if (startOffset != null) return startOffset
+            if (currentTerm.subtermCount == 0) break
+            currentTerm = currentTerm.getSubterm(0) // left-most term
+        }
+        return null
+    }
+
+    private fun getEndOffsetRecursive(term: IStrategoTerm): Int = tryGetEndOffsetRecursive(term) ?: throw NullPointerException("Could not determine end offset of term: $term")
+
+    /**
+     * Attempts to get the end offset the specified term or a descendant right-most term.
+     *
+     * @param term the term
+     * @return the term's end offset; or `null` when it could not be determined
+     */
+    private fun tryGetEndOffsetRecursive(term: IStrategoTerm): Int? {
+        var currentTerm: IStrategoTerm = term
+        while (true) {
+            val endOffset = tryGetEndOffset(currentTerm)
+            if (endOffset != null) return endOffset
+            if (currentTerm.subtermCount == 0) break
+            currentTerm = currentTerm.getSubterm(currentTerm.subtermCount - 1) // right-most term
+        }
+        return null
+    }
+
+    /**
+     * Gets the sort of a placeholder term.
+     */
+    private fun getSortFromPlaceholderTerm(term: IStrategoTerm): String {
+        if (term !is IStrategoAppl) throw IllegalStateException("Expected placeholder term, got: $term")
+        if (!term.name.endsWith("-Plhdr")) throw IllegalStateException("Expected placeholder term, got: $term")
+        return term.name.substring(0, term.name.length - "-Plhdr".length)
+    }
+
+    /**
      * A value and a placeholder offset.
      *
      * @property value the value
-     * @property offset the placeholder offset
+     * @property placeholderTerm the placeholder term
+     * @property placeholderPath the path to the placeholder
+     * @property startOffset the start offset of the placeholder
+     * @property endOffset the end offset of the placeholder
      * @property expectedAst the expected AST
      * @property expectsLiteral whether to expect a literal at the placeholder
      */
     data class TestCaseInfo<out T>(
         val value: T,
-        val offset: Int,
+        val placeholderTerm: IStrategoTerm,
+        val placeholderPath: TreePath<IStrategoTerm>,
+        val startOffset: Int,
+        val endOffset: Int,
         val expectedAst: IStrategoTerm,
         val expectsLiteral: Boolean,
     ) {
         fun <R> map(f: (T) -> R?): TestCaseInfo<R>? {
             val newValue = f(value) ?: return null
-            return TestCaseInfo(newValue, offset, expectedAst, expectsLiteral)
+            return TestCaseInfo(newValue, placeholderTerm, placeholderPath, startOffset, endOffset, expectedAst, expectsLiteral)
         }
     }
 
+    enum class PrettyPrintingMode {
+        /** Perform no pretty-printing. */
+        None,
+        /** Pretty-print the placeholder only. */
+        OnlyPlaceholder,
+        /** Pretty-print everything. */
+        All,
+    }
+
+    /**
+     * Resolves a path starting from this term.
+     *
+     * @param path the path to resolve
+     * @return the resulting term
+     * @throws IndexOutOfBoundsException the path is invalid
+     */
+    private fun IStrategoTerm.resolve(path: TreePath<IStrategoTerm>): IStrategoTerm {
+        val tail = path.tail ?: return this
+        val subterm = this.subterms[path.index]
+        return subterm.resolve(tail)
+    }
 }

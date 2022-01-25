@@ -1,10 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+//import com.adarshr.gradle.testlogger.theme.ThemeType
 
 plugins {
     java
-    kotlin("jvm") version "1.5.31"
-    kotlin("kapt") version "1.5.31"
-    kotlin("plugin.serialization") version "1.5.21"
+    kotlin("jvm") version "1.6.10"
+    kotlin("kapt") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.10"
+    id("com.adarshr.test-logger") version "3.1.0"
 }
 
 allprojects {
@@ -36,10 +38,10 @@ allprojects {
 
 val spoofax3Version             = "0.16.17"   // "latest.integration"
 //val spoofax3Version             = "0.16.15"   // "latest.integration"
-val slf4jVersion                = "1.7.30"
+val slf4jVersion                = "1.7.33"
 val logbackVersion              = "1.2.6"
 val microutilsLoggingVersion    = "2.0.11"
-val daggerVersion               = "2.36"
+val daggerVersion               = "2.40.5"
 val progressbarVersion          = "0.9.2"
 val cliktVersion                = "3.2.0"
 val mordantVersion              = "2.0.0-beta3"
@@ -51,11 +53,39 @@ val commonsIoVersion            = "2.8.0"
 val commonsMathVersion          = "3.6.1"
 val junitVersion                = "5.8.1"
 
-configure(subprojects.filter { "ccbench.platform" !in it.name }) {
+
+allprojects {
+    apply(plugin = "java-library")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+
+    dependencies {
+        implementation(kotlin("stdlib"))
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+
+        // Logging
+        implementation("org.slf4j:slf4j-api:$slf4jVersion")
+        implementation("io.github.microutils:kotlin-logging-jvm:$microutilsLoggingVersion")
+
+        // Testing
+        testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+        testRuntimeOnly   ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    }
+
+    tasks.getByName<Test>("test") {
+        useJUnitPlatform()
+//        testlogger {
+//            theme = ThemeType.MOCHA
+//        }
+    }
+}
+
+configure(subprojects.filter { "spree" !in it.name }) {
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.kapt")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+//    apply(plugin = "com.adarshr.test-logger")
 
     dependencies {
         // Platform
@@ -72,7 +102,7 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
 //        testImplementation(platform(project(":ccbench.platform")))
 //        testRuntimeOnly(platform(project(":ccbench.platform")))
 //        implementation(kotlin("stdlib"))
-
+        implementation(project(":spree"))
 
         // Spoofax
         implementation("org.metaborg:statix.codecompletion.pie")
@@ -95,9 +125,9 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
         implementation("io.github.microutils:kotlin-logging-jvm:$microutilsLoggingVersion")
 
         // Dependency Injection
-        implementation("com.google.dagger:dagger")
-        implementation("com.google.dagger:dagger-compiler")
-        kapt("com.google.dagger:dagger-compiler")
+        implementation("com.google.dagger:dagger:$daggerVersion")
+        implementation("com.google.dagger:dagger-compiler:$daggerVersion")
+        kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
         // CLI
         implementation("me.tongfei:progressbar:$progressbarVersion")
@@ -117,7 +147,7 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
         implementation("org.jfree:org.jfree.pdf:$jfreePdfVersion")
 
         // Utils
-        implementation("commons-io:commons-io")
+        implementation("commons-io:commons-io:$commonsIoVersion")
         implementation("org.apache.commons:commons-math3:$commonsMathVersion")
 
         // Testing
@@ -127,6 +157,9 @@ configure(subprojects.filter { "ccbench.platform" !in it.name }) {
 
     tasks.getByName<Test>("test") {
         useJUnitPlatform()
+//        testlogger {
+//            theme = ThemeType.MOCHA
+//        }
     }
 
     kapt {

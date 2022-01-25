@@ -35,7 +35,7 @@ class TigerIntegrationTests: IntegrationTestsBase() {
             "--project", projectDir.toString(),
             "--input", casesDir.resolve("$testName.yml").toString(),
             "--output", resultsDir.toString(),
-            "--warmup", "5",
+            "--warmups", "5",
             "--sample", "50",
             "--seed", "12345",
         ))

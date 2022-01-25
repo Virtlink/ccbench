@@ -4,6 +4,7 @@ pluginManagement {
     repositories {
         maven("https://artifacts.metaborg.org/content/groups/public/")
     }
+    includeBuild("../devenv-220119")
 }
 
 include("spree")
@@ -12,7 +13,7 @@ include("ccbench.tiger")
 include("ccbench.chocopy")
 //include("ccbench.webdsl")
 
-includeBuild("../devenv")
-includeBuild("../chocopy-grading-2021")
+includeBuild("../devenv-220119")
+//includeBuild("../chocopy-grading-2021")
 
 

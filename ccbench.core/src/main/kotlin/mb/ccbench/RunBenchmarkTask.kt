@@ -109,7 +109,7 @@ abstract class RunBenchmarkTask(
             val dstInputResource = ctx.require(dstInputFile)
             charSize = dstInputFile.fileSize()  // Assumes UTF-8
             lineSize = dstInputFile.bufferedReader().lineSequence().count().toLong()
-            val ast = parseTask.runParse(ctx, dstInputResource.key)
+            val ast = parseTask.runParse(ctx, dstInputResource.key, dstInputResource.key)
             tokenSize = ImploderAttachment.getTokenizer(ast).tokenCount.toLong()
             astSize = computeTermSize(ast)
 
