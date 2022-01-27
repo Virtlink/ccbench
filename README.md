@@ -4,11 +4,16 @@ This performs a code completion benchmark test. The inputs are files of the test
 For each completion, it measures the time from invocation until getting results. We may or may not have to include the time required for parsing and initial analysis.
 
 ## Build
-This project depends on several Spoofax 3 projects:
-- `devenv`
-- `tiger`
-- `chocopy`
-
+This project depends on several projects:
+- [`devenv`](https://github.com/metaborg/devenv) — Spoofax 3
+- `tiger` — Spoofax 3 Tiger language (part of Spoofax 3)
+- [`chocopy`](https://gitlab.ewi.tudelft.nl/CS4200/admin/chocopy-grading/) — Spoofax 2 ChocoPy language
+- [`chocopy`](https://gitlab.ewi.tudelft.nl/CS4200/admin/chocopy-grading-2021/) — Spoofax 3 ChocoPy language
+- [`webdsl`](https://github.com/webdsl/webdsl-statix/) — Spoofax 2 WebDSL language
+- [`webdsl`](https://github.com/Virtlink/webdsl-statix/) — Spoofax 3 WebDSL language
+- [`ccbench-tiger`](https://github.com/Virtlink/ccbench-tiger) — Tiger test files and benchmark cases.
+- [`ccbench-chocopy`](https://github.com/Virtlink/ccbench-chocopy) — ChocoPy test files and benchmark cases.
+- [`ccbench-webdsl`](https://github.com/Virtlink/ccbench-webdsl) — WebDSL test files and benchmark cases.
 
 
 Easiest is to include the [Spoofax 3][1] `devenv` as an included build when building on the command line:
