@@ -26,7 +26,7 @@ class ChocopyBuildBenchmarkTask @Inject constructor(
     "pre-analyze",
     "post-analyze",
     "upgrade-placeholders",
-    "downgrade-placeholders",
+    "downgrade-placeholders-chocopy-Program", //"downgrade-placeholders",
     "is-inj",
     "pp-partial",
     textResourceRegistry,

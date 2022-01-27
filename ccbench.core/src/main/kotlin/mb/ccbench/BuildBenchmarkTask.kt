@@ -84,7 +84,7 @@ abstract class BuildBenchmarkTask(
     override fun getId(): String = BuildBenchmarkTask::class.java.name
 
     override fun exec(ctx: ExecContext, input: Input): ListView<TestCase> {
-        val prettyPrintMode = PrettyPrintingMode.All
+        val prettyPrintMode = PrettyPrintingMode.OnlyPlaceholder
         val runtime = strategoRuntimeProvider.get()
 //        val runtime = ctx.require<None, OutTransient<Provider<StrategoRuntime>>>(getStrategoRuntimeProviderTaskDef, None.instance).getValue().get()
 
@@ -144,11 +144,12 @@ abstract class BuildBenchmarkTask(
 
         // Downgrade the placeholders in the incomplete ASTs, and pretty-print them
         val prettyPrintedAsts = incompleteAsts.mapNotNull { it.map { term ->
+            val downgradedAst = downgrade(runtime, term)
             if (prettyPrintMode == PrettyPrintingMode.All) {
-                prettyPrint(runtime, implicate(runtime, downgrade(runtime, term)))
+                prettyPrint(runtime, implicate(runtime, downgradedAst))
             } else {
                 // Get the downgraded placeholder term (so we know the Sort)
-                val placeholderTerm = downgrade(runtime, term).resolve(it.placeholderPath)
+                val placeholderTerm = downgradedAst.resolve(it.placeholderPath)
                 val placeholderRepr = if (prettyPrintMode == PrettyPrintingMode.OnlyPlaceholder) {
                     // pretty-print it (so we know its representation)
                     prettyPrint(runtime, placeholderTerm)
