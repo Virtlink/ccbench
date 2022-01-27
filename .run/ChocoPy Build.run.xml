@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ChocoPy Build" type="JetRunConfigurationType" folderName="ChocoPy">
+    <option name="MAIN_CLASS_NAME" value="mb.ccbench.chocopy.MainKt" />
+    <module name="ccbench.ccbench.chocopy.main" />
+    <option name="PROGRAM_PARAMETERS" value="build ChocoPy -p project/ -o cases/" />
+    <shortenClasspath name="NONE" />
+    <option name="VM_PARAMETERS" value="-Xms512M -Xmx8G -Xss16M" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../ccbench-chocopy/" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

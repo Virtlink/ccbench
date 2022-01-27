@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Tiger Build" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="mb.ccbench.tiger.MainKt" />
+    <module name="ccbench.ccbench.tiger.main" />
+    <option name="PROGRAM_PARAMETERS" value="build Tiger -p project/ -o cases/" />
+    <shortenClasspath name="NONE" />
+    <option name="VM_PARAMETERS" value="-Xms512M -Xmx8G -Xss16M" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../ccbench-tiger" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
