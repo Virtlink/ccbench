@@ -15,6 +15,36 @@ This project depends on several projects:
 - [`ccbench-chocopy`](https://github.com/Virtlink/ccbench-chocopy) — ChocoPy test files and benchmark cases.
 - [`ccbench-webdsl`](https://github.com/Virtlink/ccbench-webdsl) — WebDSL test files and benchmark cases.
 
+1. Clone [Spoofax 3][1] `devenv`, enable `gitonium`, and use the `custom-placeholders` branch for `spoofax.pie`:
+    ```shell
+    git clone --recurse-submodules --remote-submodules -j8 git@github.com:metaborg/devenv.git devenv
+    cd devenv
+    nano repo.properties    # Set: gitonium=true
+    ./repo update
+    cd spoofax.pie
+    git checkout custom-placeholders
+    ```
+
+2. Build the project and publish the artifacts to Maven local:
+    ```shell
+    ./gradlew buildAll --parallel
+    ./gradlew publishAllToMavenLocal
+    ```
+
+3. Clone `chocopy` and make it depend on the `devenv` project:
+    ```shell
+    git clone --recurse-submodules --remote-submodules -j8 git@gitlab.ewi.tudelft.nl:Virtlink/chocopy.git chocopy
+    cd chocopy
+    ```
+   
+4. Build the project and publish the artifacts to Maven local:
+    ```shell
+    ./gradlew build --parallel
+    ./gradlew publishToMavenLocal
+    ```
+   
+5. Now, `ccbench` should depend on `devenv` and use the ChocoPy artifact from Maven local.
+
 
 Easiest is to include the [Spoofax 3][1] `devenv` as an included build when building on the command line:
 
