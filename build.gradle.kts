@@ -80,7 +80,7 @@ allprojects {
     }
 }
 
-configure(subprojects.filter { "spree" !in it.name }) {
+configure(subprojects.filter { "spree" !in it.name && "asterm" !in it.name }) {
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.kapt")

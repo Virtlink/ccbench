@@ -8,6 +8,7 @@ pluginManagement {
 }
 
 include("spree")
+include("asterms")
 include("ccbench.core")
 include("ccbench.tiger")
 include("ccbench.chocopy")

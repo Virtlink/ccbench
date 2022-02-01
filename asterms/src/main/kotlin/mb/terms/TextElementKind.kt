@@ -1,4 +1,4 @@
-package mb.spree.green
+package mb.terms
 
 /**
  * The kind of text element, as a 'scope name'.

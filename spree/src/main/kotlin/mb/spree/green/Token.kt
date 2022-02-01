@@ -5,6 +5,7 @@ package mb.spree.green
  */
 class Token(
     /** The text content of the token, excluding leading or trailing layout. */
+    // TODO: In which cases can this be an empty string? Only for BOF/EOF?
     override val content: String,
     /** The kind of token. */
     override val kind: TextElementKind,
@@ -29,4 +30,11 @@ class Token(
     override fun <R> accept(visitor: NodeVisitor<R>): R = visitor.visitToken(this)
 
     override fun <A0, R> accept(visitor: NodeVisitor1<A0, R>, arg0: A0): R = visitor.visitToken(this, arg0)
+
+    companion object {
+        /** A special token indicating the start of the input. */
+        val BOF: Token = Token("", TextElementKind.BOF)
+        /** A special token indicating the end of the input. */
+        val EOF: Token = Token("", TextElementKind.EOF)
+    }
 }
