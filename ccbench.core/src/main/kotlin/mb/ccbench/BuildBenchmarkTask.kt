@@ -158,6 +158,10 @@ abstract class BuildBenchmarkTask(
                     val sort = getSortFromPlaceholderTerm(placeholderTerm)
                     "[[$sort]]"
                 }
+                if (placeholderRepr.isBlank()) {
+                    log.warn { "Placeholder not found. Skipped." }
+                    return@map null
+                }
                 // and replace it in the original text
                 val inputString = inputResource.readString()
                 inputString.substring(0, it.startOffset) + placeholderRepr + inputString.substring(it.endOffset)
@@ -184,11 +188,12 @@ abstract class BuildBenchmarkTask(
             termWriter.writeToPath(case.expectedAst, expectedFile)
 //            Files.writeString(expectedFile, TermToString.toString(case.expectedAst))
 
-            val placeholderRegion = getPlaceholderRegion(case.value)
-            if (placeholderRegion == null) {
-                log.warn { "Placeholder not found. Skipped $name." }
-                continue
-            }
+            val placeholderRegion = Region.fromOffsets(case.startOffset, case.endOffset)
+//            val placeholderRegion = getPlaceholderRegion(case.value)
+//            if (placeholderRegion == null) {
+//                log.warn { "Placeholder not found. Skipped $name." }
+//                continue
+//            }
 
             // Add the test case
             testCases.add(
