@@ -26,7 +26,7 @@ class TigerBuildBenchmarkTask @Inject constructor(
     "pre-analyze",
     "post-analyze",
     "upgrade-placeholders",
-    "downgrade-placeholders-tiger-Program", // "downgrade-placeholders",
+    "downgrade-placeholders-tiger-Module", // "downgrade-placeholders",
     "is-inj",
     "pp-partial",
     textResourceRegistry,
