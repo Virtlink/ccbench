@@ -24,6 +24,7 @@ import java.io.Serializable
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Provider
 
 /**
@@ -74,10 +75,6 @@ abstract class BuildBenchmarkTask(
         pie.newSession().use { session ->
             val topDownSession = session.updateAffectedBy(emptySet())
             return topDownSession.require(this.createTask(Input(projectDir, inputFile, testCaseDir, sample, rnd))).toList()
-//            } catch (ex: Exception) {
-//                ex.printStackTrace()
-//                emptyList()
-//            }
         }
     }
 
@@ -86,7 +83,6 @@ abstract class BuildBenchmarkTask(
     override fun exec(ctx: ExecContext, input: Input): ListView<TestCase> {
         val prettyPrintMode = PrettyPrintingMode.OnlyPlaceholder
         val runtime = strategoRuntimeProvider.get()
-//        val runtime = ctx.require<None, OutTransient<Provider<StrategoRuntime>>>(getStrategoRuntimeProviderTaskDef, None.instance).getValue().get()
 
         val originalName = input.inputFile.withExtension("").toString()
         val resInputFile = input.projectDir.resolve(input.inputFile)
@@ -140,7 +136,8 @@ abstract class BuildBenchmarkTask(
         val explicatedAst = explicate(runtime, ppAst)
 
         // Get all possible incomplete ASTs
-        val incompleteAsts = buildIncompleteAsts(explicatedAst, runtime.termFactory)
+        val index = AtomicInteger(0)
+        val incompleteAsts = buildIncompleteAsts(explicatedAst, runtime.termFactory, { index.getAndIncrement() }, { i -> input.inputFile.withName { "$it-$i" }.withExtension("").toString() })
 
         // Downgrade the placeholders in the incomplete ASTs, and pretty-print them
         val prettyPrintedAsts = incompleteAsts.mapNotNull { it.map { term ->
@@ -159,7 +156,7 @@ abstract class BuildBenchmarkTask(
                     "[[$sort]]"
                 }
                 if (placeholderRepr.isBlank()) {
-                    log.warn { "Placeholder not found. Skipped." }
+                    log.warn { "Placeholder not found. Skipped: ${it.name}" }
                     return@map null
                 }
                 // and replace it in the original text
@@ -174,11 +171,12 @@ abstract class BuildBenchmarkTask(
         val indexedAsts = prettyPrintedAsts.withIndex()
         val sampledAsts = input.sample?.let { indexedAsts.sample(it, input.rnd) } ?: indexedAsts
         for((i, case) in ProgressBar.wrap(sampledAsts, "Input files")) {
-            val name = input.inputFile.withName { "$it-$i" }.withExtension("").toString()
+            val name = case.name
+//            val name = input.inputFile.withName { "$it-${case.index}" }.withExtension("").toString()
 
             log.trace { "Writing $name..." }
             // Write the pretty-printed AST to file
-            val outputFile = input.testCaseDir.resolve(input.inputFile.withName { "$it-$i" })
+            val outputFile = input.testCaseDir.resolve(input.inputFile.withName { "$it-${case.index}" })
             ctx.provide(outputFile)
             Files.writeString(outputFile, case.value)
 
@@ -218,11 +216,14 @@ abstract class BuildBenchmarkTask(
      * @param term the term
      * @return a sequence of all possible variants of this term with a placeholder
      */
-    private fun buildIncompleteAsts(term: IStrategoTerm, factory: ITermFactory): List<TestCaseInfo<IStrategoTerm>> {
+    private fun buildIncompleteAsts(term: IStrategoTerm, factory: ITermFactory, supplyIndex: () -> Int, supplyName: (Int) -> String): List<TestCaseInfo<IStrategoTerm>> {
         // Replace the term with a placeholder
         val placeholderTerm = makePlaceholder("x", factory)
+        val index = supplyIndex()
         val thisTestCase = TestCaseInfo(
             placeholderTerm,
+            supplyName(index),
+            index,
             placeholderTerm,
             TreePath.empty(),
             getStartOffsetRecursive(term),
@@ -232,8 +233,8 @@ abstract class BuildBenchmarkTask(
         )
         // or replace a subterm with all possible sub-asts with a placeholder
         return listOf(thisTestCase) + term.subterms.flatMapIndexed { i, subTerm ->
-            buildIncompleteAsts(subTerm, factory).map { (newSubTerm, placeholderTerm, placeholderPath, startOffset, endOffset, expectedAst, expectsLiteral) ->
-                TestCaseInfo(term.withSubterm(i, newSubTerm, factory), placeholderTerm, placeholderPath.prepend(i), startOffset, endOffset, expectedAst, expectsLiteral)
+            buildIncompleteAsts(subTerm, factory, supplyIndex, supplyName).map { (newSubTerm, name, index, placeholderTerm, placeholderPath, startOffset, endOffset, expectedAst, expectsLiteral) ->
+                TestCaseInfo(term.withSubterm(i, newSubTerm, factory), name, index, placeholderTerm, placeholderPath.prepend(i), startOffset, endOffset, expectedAst, expectsLiteral)
             }
         }
     }
@@ -443,6 +444,8 @@ abstract class BuildBenchmarkTask(
      * A value and a placeholder offset.
      *
      * @property value the value
+     * @property name the name of the test case
+     * @property index the unique index of the test case
      * @property placeholderTerm the placeholder term
      * @property placeholderPath the path to the placeholder
      * @property startOffset the start offset of the placeholder
@@ -452,6 +455,8 @@ abstract class BuildBenchmarkTask(
      */
     data class TestCaseInfo<out T>(
         val value: T,
+        val name: String,
+        val index: Int,
         val placeholderTerm: IStrategoTerm,
         val placeholderPath: TreePath<IStrategoTerm>,
         val startOffset: Int,
@@ -459,9 +464,10 @@ abstract class BuildBenchmarkTask(
         val expectedAst: IStrategoTerm,
         val expectsLiteral: Boolean,
     ) {
+
         fun <R> map(f: (T) -> R?): TestCaseInfo<R>? {
             val newValue = f(value) ?: return null
-            return TestCaseInfo(newValue, placeholderTerm, placeholderPath, startOffset, endOffset, expectedAst, expectsLiteral)
+            return TestCaseInfo(newValue, name, index, placeholderTerm, placeholderPath, startOffset, endOffset, expectedAst, expectsLiteral)
         }
     }
 
