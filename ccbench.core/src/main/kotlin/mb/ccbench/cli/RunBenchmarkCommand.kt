@@ -3,10 +3,7 @@ package mb.ccbench.cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.optional
-import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.flag
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.required
+import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.long
 import com.github.ajalt.clikt.parameters.types.path
@@ -29,6 +26,8 @@ abstract class RunBenchmarkCommand(
     val projectDir: Path by option("-p", "--project", help = "Project directory").path(mustExist = true, canBeFile = false, canBeDir = true).required()
     val inputFile: Path by option("-i", "--input", help = "Benchmark YAML file").path(mustExist = true, canBeFile = true, canBeDir = false).required()
     val outputDir: Path? by option("-o", "--output", help = "Output directory").path(mustExist = false, canBeFile = false, canBeDir = true)
+    val fileNames: List<String> by option("-f", "--file", help = "The names of files whose tests are candidates; or none to allow all tests as candidates").multiple()
+    val testNames: List<String> by option("-t", "--test", help = "The names of candidate tests; or none to allow all tests as candidates").multiple()
     val samples: Int? by option("-s", "--sample", help = "How many samples in total").int()
     val warmups: Int? by option("-w", "--warmups", help = "How many warmups in total").int()
     val seed: Long? by option("--seed", help = "The seed").long()
@@ -56,6 +55,8 @@ abstract class RunBenchmarkCommand(
             actualProjectDir,
             tmpProjectDir,
             actualOutputDir,
+            fileNames,
+            testNames,
             samples,
             warmups,
             seed,

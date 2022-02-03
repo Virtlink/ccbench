@@ -103,6 +103,7 @@ abstract class RunBenchmarkTask(
         var results: TermCodeCompletionResult? = null
         val eventHandler = MeasuringCodeCompletionEventHandler()
         try {
+            log.debug { "Running test ${input.testCase.inputFile}..."}
             val dstInputFile = input.targetProjectDir.resolve(input.testCase.file)
 
             // We parse the input resource here, such that we don't measure the overhead of parsing the input resource again
@@ -114,7 +115,7 @@ abstract class RunBenchmarkTask(
             astSize = computeTermSize(ast)
 
             // Execute code completion
-            codeCompletionTask.withEventHandlerProvider { eventHandler };
+            codeCompletionTask.withEventHandlerProvider { eventHandler }
             results = ctx.require(
                 codeCompletionTask, CodeCompletionTaskDef.Input(
                     Region.atOffset(input.testCase.placeholderOffset),

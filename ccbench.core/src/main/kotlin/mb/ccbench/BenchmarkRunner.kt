@@ -46,6 +46,22 @@ abstract class BenchmarkRunner(
 ) {
     private val log = KotlinLogging.logger {}
 
+    /**
+     * Runs the benchmark tests.
+     *
+     * @param name the name of the benchmark (used as the name of the output CSV and YML files)
+     * @param benchmark the benchmark, read from the input file
+     * @param benchmarkFile the file from which the benchmark was read
+     * @param projectDir the directory with the other project files
+     * @param tmpProjectDir the directory where the project files and the benchmark test case are copied to run a single benchmark case
+     * @param outputDir the directory where the output CSV and YML files are written
+     * @param fileNames the names of files whose tests to include in the candidates (or an empty list to include all)
+     * @param testNames the names of tests to include in the candidates (or an empty list to include all tests)
+     * @param samples the number of tests to sample from the candidates
+     * @param warmups the number of warmup tests to run (sampled from the candidates) before running the actual tests
+     * @param seed the seed to use for the random number generator for the sampling
+     * @param completeDeterministic whether to perform deterministic completion
+     */
     @OptIn(ExperimentalStdlibApi::class)
     fun run(
         name: String,
@@ -54,6 +70,8 @@ abstract class BenchmarkRunner(
         projectDir: Path,
         tmpProjectDir: Path,
         outputDir: Path,
+        fileNames: List<String>,
+        testNames: List<String>,
         samples: Int?,
         warmups: Int?,
         seed: Long?,
@@ -82,6 +100,8 @@ abstract class BenchmarkRunner(
                 testCaseDir,
                 projectDir,
                 tmpProjectDir,
+                fileNames,
+                testNames,
                 warmups,
                 // We derive the warmup from the seed,
                 // but don't use the same seed (to avoid running some of the same tests already in the warmup)
@@ -101,6 +121,8 @@ abstract class BenchmarkRunner(
             testCaseDir,
             projectDir,
             tmpProjectDir,
+            fileNames,
+            testNames,
             samples,
             actualSeed,
             completeDeterministic,
@@ -183,6 +205,8 @@ abstract class BenchmarkRunner(
      * @param testCaseDir the directory with the benchmark test cases
      * @param srcProjectDir the directory with the project
      * @param dstProjectDir the directory with a copy of the project, which is modified for each test
+     * @param fileNames the names of files whose tests to include in the candidates (or an empty list to include all)
+     * @param testNames the names of tests to include in the candidates (or an empty list to include all tests)
      * @param samples the number of tests to run
      * @param seed the seed for the sampler
      * @param completeDeterministic whether to do deterministic completion
@@ -196,6 +220,8 @@ abstract class BenchmarkRunner(
         testCaseDir: Path,
         srcProjectDir: Path,
         dstProjectDir: Path,
+        fileNames: List<String>,
+        testNames: List<String>,
         samples: Int?,
         seed: Long,
         completeDeterministic: Boolean,
@@ -208,7 +234,13 @@ abstract class BenchmarkRunner(
         val results = mutableListOf<BenchResult>()
 
         // Pick a random sample of test cases, or randomize the order
-        val selectedTestCases = benchmark.testCases.sample(samples ?: benchmark.testCases.size, rnd)
+        val candidates = if (fileNames.isEmpty() && testNames.isEmpty()) {
+            benchmark.testCases
+        } else {
+            benchmark.testCases.filter { it.name in testNames || it.file.toString() in fileNames }
+        }
+        val selectedTestCases = candidates.sample(samples ?: candidates.size, rnd)
+        log.info { "Selected ${selectedTestCases.size} cases from ${candidates.size} candidates (out of ${benchmark.testCases.size} possible cases)." }
         if (selectedTestCases.isEmpty()) {
             log.warn { "No tests will be run!" }
         }
