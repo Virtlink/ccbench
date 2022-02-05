@@ -132,15 +132,18 @@ abstract class RunBenchmarkTask(
                 if (success) {
                     log.info { "Success. Expected: ${input.expectedTerm}, got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
                     BenchResultKind.Success
+                } else if (input.expectedTerm is IStringTerm) {
+                    log.info { "Success. Expected literal: ${input.expectedTerm}, but got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
+                    BenchResultKind.Literal
                 } else {
-                    log.warn { "Fail. Expected: ${input.expectedTerm}, got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
+                    log.warn { "Fail. Expected: ${input.expectedTerm}, but got: ${extProposals.joinToString { "${it.label} (${it.term})" }}" }
                     BenchResultKind.Failed
                 }
             } else if (input.expectedTerm is IStringTerm) {
-                log.info { "Success. Expected literal: ${input.expectedTerm}, got no proposals." }
+                log.info { "Success. Expected literal: ${input.expectedTerm}, but got no proposals." }
                 BenchResultKind.Literal
             } else {
-                log.warn { "Fail. Expected: ${input.expectedTerm}, got no proposals." }
+                log.warn { "Fail. Expected: ${input.expectedTerm}, but got no proposals." }
                 BenchResultKind.NoResults
             }
         } catch (ex: IllegalStateException) {
