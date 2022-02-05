@@ -23,6 +23,7 @@ data class BenchmarkSummary(
     val seed: Long,
     val deterministicCompletion: Boolean,
 
+    val totalFiles: Int,
     val totalTests: Int,
     val successTests: Int,
     val literalTests: Int,
@@ -85,20 +86,20 @@ data class BenchmarkSummary(
                 expandDeterministicTimeStats.addValue(result.timings.expandDeterministicTime)
             }
 
-            fun getTimings(f: (DescriptiveStatistics) -> Double): Timings
-                    = Timings(
-                f(parseTimeStats),
-                f(preparationTimeStats),
-                f(analyzeTimeStats),
-                f(codeCompletionTimeStats),
-                f(finishingTimeStats),
-                f(totalTimeStats),
+            fun getTimings(f: (DescriptiveStatistics) -> Double): Timings =
+                Timings(
+                    f(parseTimeStats),
+                    f(preparationTimeStats),
+                    f(analyzeTimeStats),
+                    f(codeCompletionTimeStats),
+                    f(finishingTimeStats),
+                    f(totalTimeStats),
 
-                f(expandRulesTimeStats),
-                f(expandInjectionsTimeStats),
-                f(expandQueriesTimeStats),
-                f(expandDeterministicTimeStats),
-            )
+                    f(expandRulesTimeStats),
+                    f(expandInjectionsTimeStats),
+                    f(expandQueriesTimeStats),
+                    f(expandDeterministicTimeStats),
+                )
 
             val mean = getTimings { s -> s.mean }                   // MEAN(data)
             val min = getTimings { s -> s.min }                     // MIN(data)
@@ -118,14 +119,17 @@ data class BenchmarkSummary(
                 results.name,
                 seed,
                 deterministicCompletion,
-                results.results.size,
-                successResults.size,
-                results.results.count { it.kind == BenchResultKind.Literal },
-                results.results.count { it.kind == BenchResultKind.Failed },
-                results.results.count { it.kind == BenchResultKind.Error },
-                results.results.count { it.kind == BenchResultKind.NoResults },
-                results.results.count { it.kind == BenchResultKind.NoPlaceholder },
-                results.results.count { it.kind == BenchResultKind.AnalysisFailed },
+                // @formatter:off
+                totalFiles          = results.results.groupBy { it.originalFile }.size,
+                totalTests          = results.results.size,
+                successTests        = successResults.size,
+                literalTests        = results.results.count { it.kind == BenchResultKind.Literal },
+                failedTests         = results.results.count { it.kind == BenchResultKind.Failed },
+                errorTests          = results.results.count { it.kind == BenchResultKind.Error },
+                noResultsTests      = results.results.count { it.kind == BenchResultKind.NoResults },
+                noPlaceholderTests  = results.results.count { it.kind == BenchResultKind.NoPlaceholder },
+                analysisFailedTests = results.results.count { it.kind == BenchResultKind.AnalysisFailed },
+                // @formatter:on
                 mean,
                 min, p01, p05, p10, median, p90, p95, p99, max,
                 strategyTimes,
