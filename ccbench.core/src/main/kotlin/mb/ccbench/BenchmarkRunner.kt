@@ -128,7 +128,7 @@ abstract class BenchmarkRunner(
             completeDeterministic,
             factory
         )
-        log.debug { "Running tests..." }
+        log.debug { "Ran tests." }
 
         val dateString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 
