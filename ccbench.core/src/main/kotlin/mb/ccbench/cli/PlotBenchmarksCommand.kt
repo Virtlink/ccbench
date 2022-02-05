@@ -23,7 +23,7 @@ import javax.inject.Inject
 class PlotBenchmarksCommand @Inject constructor() : CliktCommand(name = "plot") {
     val inputFiles: List<Path> by option("-i", "--input", help = "Benchmark CSV results").path(mustExist = true, canBeFile = true, canBeDir = false).multiple(required = true)
     val inputNames: List<String> by option("-n", "--name", help = "Name of the benchmark in the legend").multiple(required = false)
-    val outputFile: Path by option("-o", "--output", help = "Output directory").path(mustExist = false, canBeFile = true, canBeDir = false).required()
+    val outputFile: Path by option("-o", "--output", help = "Output file").path(mustExist = false, canBeFile = true, canBeDir = false).required()
     val title: String? by option("-t", "--title", help = "Title of the plot")
     val yParameter: YParameter by option("-y", help = "Y-axis parameter to plot").enum<YParameter>().default(YParameter.Total)
 
@@ -39,7 +39,7 @@ class PlotBenchmarksCommand @Inject constructor() : CliktCommand(name = "plot") 
         val actualOutputFile = outputFile.toAbsolutePath()
 
         log.debug { "Reading result sets..."}
-        val resultSets = inputFiles.mapIndexed() { i, path -> BenchResultSet.readFromCsv(
+        val resultSets = inputFiles.mapIndexed { i, path -> BenchResultSet.readFromCsv(
             if (inputNames.isNotEmpty()) inputNames[i] else path.fileName.withExtension("").toString(),
             path.toAbsolutePath())
         }

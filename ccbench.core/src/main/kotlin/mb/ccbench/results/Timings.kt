@@ -46,7 +46,7 @@ data class Timings(
             "FinishingTime",
             "TotalTime",
 
-            "NoteCodeCompletionTime",
+            "NotCodeCompletionTime",
 
             "ExpandRulesTime",
             "ExpandInjectionsTime",
