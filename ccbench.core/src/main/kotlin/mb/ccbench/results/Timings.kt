@@ -75,7 +75,7 @@ data class Timings(
             decimalFormatter.format(obj.finishingTime),           // ms
             decimalFormatter.format(obj.totalTime),               // ms
 
-            decimalFormatter.format(obj.notCodeCompletionTime),  // ms
+            decimalFormatter.format(obj.notCodeCompletionTime),   // ms
 
             decimalFormatter.format(obj.expandRulesTime),         // ms
             decimalFormatter.format(obj.expandInjectionsTime),    // ms
@@ -89,20 +89,64 @@ data class Timings(
          * @param values the list of CSV values
          * @return the object
          */
-        fun fromCsvRecord(values: List<String>, offset: Int = 0): Timings = Timings(
-            decimalFormatter.parse(values[offset + 0]).toDouble(),
-            decimalFormatter.parse(values[offset + 1]).toDouble(),
-            decimalFormatter.parse(values[offset + 2]).toDouble(),
-            decimalFormatter.parse(values[offset + 3]).toDouble(),
-            decimalFormatter.parse(values[offset + 4]).toDouble(),
-            decimalFormatter.parse(values[offset + 5]).toDouble(),
+        fun fromCsvRecord(values: List<String>, offset: Int = 0): Timings {
+            val parseTime: Double
+            val preparationTime: Double
+            val analyzeTime: Double
+            val codeCompletionTime: Double
+            val finishingTime: Double
+            val totalTime: Double
+            val notCodeCompletionTime: Double
+            val expandRulesTime: Double
+            val expandInjectionsTime: Double
+            val expandQueriesTime: Double
+            val expandDeterministicTime: Double
+            if (values.size - offset == 11) {
+                // @formatter:off
+                parseTime               = decimalFormatter.parse(values[offset + 0]).toDouble()
+                preparationTime         = decimalFormatter.parse(values[offset + 1]).toDouble()
+                analyzeTime             = decimalFormatter.parse(values[offset + 2]).toDouble()
+                codeCompletionTime      = decimalFormatter.parse(values[offset + 3]).toDouble()
+                finishingTime           = decimalFormatter.parse(values[offset + 4]).toDouble()
+                totalTime               = decimalFormatter.parse(values[offset + 5]).toDouble()
+                notCodeCompletionTime   = decimalFormatter.parse(values[offset + 6]).toDouble()
+                expandRulesTime         = decimalFormatter.parse(values[offset + 7]).toDouble()
+                expandInjectionsTime    = decimalFormatter.parse(values[offset + 8]).toDouble()
+                expandQueriesTime       = decimalFormatter.parse(values[offset + 9]).toDouble()
+                expandDeterministicTime = decimalFormatter.parse(values[offset + 10]).toDouble()
+                // @formatter:on
+            } else if (values.size - offset == 10){
+                // @formatter:off
+                parseTime               = decimalFormatter.parse(values[offset + 0]).toDouble()
+                preparationTime         = decimalFormatter.parse(values[offset + 1]).toDouble()
+                analyzeTime             = decimalFormatter.parse(values[offset + 2]).toDouble()
+                codeCompletionTime      = decimalFormatter.parse(values[offset + 3]).toDouble()
+                finishingTime           = decimalFormatter.parse(values[offset + 4]).toDouble()
+                totalTime               = decimalFormatter.parse(values[offset + 5]).toDouble()
+                notCodeCompletionTime   = parseTime + preparationTime + analyzeTime + finishingTime
+                expandRulesTime         = decimalFormatter.parse(values[offset + 6]).toDouble()
+                expandInjectionsTime    = decimalFormatter.parse(values[offset + 7]).toDouble()
+                expandQueriesTime       = decimalFormatter.parse(values[offset + 8]).toDouble()
+                expandDeterministicTime = decimalFormatter.parse(values[offset + 9]).toDouble()
+                // @formatter:on
+            } else {
+                throw IllegalArgumentException("Invalid number of values: ${values.size}")
+            }
+            return Timings(
+                parseTime,
+                preparationTime,
+                analyzeTime,
+                codeCompletionTime,
+                finishingTime,
+                totalTime,
 
-            decimalFormatter.parse(values[offset + 6]).toDouble(),
+                notCodeCompletionTime,
 
-            decimalFormatter.parse(values[offset + 7]).toDouble(),
-            decimalFormatter.parse(values[offset + 8]).toDouble(),
-            decimalFormatter.parse(values[offset + 9]).toDouble(),
-            decimalFormatter.parse(values[offset + 10]).toDouble(),
-        )
+                expandRulesTime,
+                expandInjectionsTime,
+                expandQueriesTime,
+                expandDeterministicTime,
+            )
+        }
     }
 }

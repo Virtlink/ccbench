@@ -42,7 +42,7 @@ abstract class BenchmarkRunner(
     private val runBenchmarkTask: RunBenchmarkTask,
     private val strategoRuntimeProvider: Provider<StrategoRuntime>,
     private val tegoRuntime: TegoRuntime,
-    private val terminal: Terminal,
+    private val summarizer: BenchmarkSummarizer,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -138,63 +138,14 @@ abstract class BenchmarkRunner(
         BenchResultSet.writeToCsv(resultSet, resultsFile)
         log.info { "Wrote benchmark results to $resultsFile" }
 
-        log.debug { "Creating benchmark summary..." }
-        val summary = BenchmarkSummary.fromResults(
-            actualSeed,
-            completeDeterministic,
+        // Summarize the results both on the terminal and in the YML file
+        summarizer.summarize(
             resultSet,
-            (tegoRuntime as? MeasuringTegoRuntime)?.measurements ?: emptyMap()
+            outputDir.resolve("$dateString-$name.yml"),
+            (tegoRuntime as? MeasuringTegoRuntime)?.measurements,
+            actualSeed,
+            completeDeterministic
         )
-
-        log.debug { "Writing benchmark summary..." }
-        val summaryFile = outputDir.resolve("$dateString-$name.yml")
-        Files.createDirectories(summaryFile.parent)
-        BenchmarkSummary.write(summary, summaryFile)
-        log.info { "Wrote benchmark summary to $summaryFile" }
-
-        fun SectionBuilder.summaryRow(name: String, f: (Timings) -> Double) {
-            row(
-                name,
-                Timings.decimalFormatter.format(f(summary.min)),
-                Timings.decimalFormatter.format(f(summary.p01)),
-                Timings.decimalFormatter.format(f(summary.p05)),
-                Timings.decimalFormatter.format(f(summary.median)),
-                Timings.decimalFormatter.format(f(summary.p95)),
-                Timings.decimalFormatter.format(f(summary.p99)),
-                Timings.decimalFormatter.format(f(summary.max)),
-            )
-        }
-
-        terminal.println(table {
-            borderStyle = SQUARE_DOUBLE_SECTION_SEPARATOR
-            align = TextAlign.RIGHT
-            outerBorder = false
-            column(0) {
-                align = TextAlign.LEFT
-                borders = Borders.ALL
-                style = magenta
-            }
-            header {
-                style(magenta, bold = true)
-                row("", "Min", "P01", "P05", "P50", "P95", "P99", "Max")
-            }
-            body {
-                rowStyles(blue, brightBlue)
-                borders = Borders.TOM_BOTTOM
-                summaryRow("Parsing") { t -> t.parseTime }
-                summaryRow("Preparation") { t -> t.preparationTime }
-                summaryRow("Analysis") { t -> t.analyzeTime }
-                summaryRow("Code Completion") { t -> t.codeCompletionTime }
-                summaryRow("Finishing") { t -> t.finishingTime }
-            }
-            footer {
-                style(bold = true)
-                summaryRow("Total") { t -> t.totalTime }
-            }
-            //captionBottom((dim)("Lower is better"))
-        })
-
-
         return resultSet
     }
 

@@ -20,8 +20,8 @@ import kotlin.io.path.bufferedWriter
  */
 data class BenchmarkSummary(
     val name: String,
-    val seed: Long,
-    val deterministicCompletion: Boolean,
+    val seed: Long?,
+    val deterministicCompletion: Boolean?,
 
     val totalFiles: Int,
     val totalTests: Int,
@@ -53,8 +53,8 @@ data class BenchmarkSummary(
          * Gets the benchmark summary.
          */
         fun fromResults(
-            seed: Long,
-            deterministicCompletion: Boolean,
+            seed: Long?,
+            deterministicCompletion: Boolean?,
             results: BenchResultSet,
             measurements: Map<String, MeasuringTegoRuntime.StrategyTime>?,
         ): BenchmarkSummary {

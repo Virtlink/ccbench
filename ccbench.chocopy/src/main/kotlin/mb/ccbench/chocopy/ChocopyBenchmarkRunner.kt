@@ -2,6 +2,7 @@ package mb.ccbench.chocopy
 
 import com.github.ajalt.mordant.terminal.Terminal
 import mb.ccbench.BenchmarkRunner
+import mb.ccbench.BenchmarkSummarizer
 import mb.pie.api.Pie
 import mb.stratego.common.StrategoRuntime
 import mb.tego.strategies.runtime.TegoRuntime
@@ -14,11 +15,11 @@ class ChocopyBenchmarkRunner @Inject constructor(
     runBenchmarkTask: ChocopyRunBenchmarkTask,
     strategoRuntimeProvider: Provider<StrategoRuntime>,
     tegoRuntime: TegoRuntime,
-    terminal: Terminal,
+    summarizer: BenchmarkSummarizer,
 ) : BenchmarkRunner(
     pie,
     runBenchmarkTask,
     strategoRuntimeProvider,
     tegoRuntime,
-    terminal,
+    summarizer,
 )
