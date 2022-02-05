@@ -156,6 +156,12 @@ abstract class RunBenchmarkTask(
             }
         }
 
+        val parseTime = (eventHandler.parseTime ?: -1).toDouble() / NS_PER_MS
+        val preparationTime = (eventHandler.preparationTime ?: -1).toDouble() / NS_PER_MS
+        val analyzeTime = (eventHandler.analysisTime ?: -1).toDouble() / NS_PER_MS
+        val codeCompletionTime = (eventHandler.codeCompletionTime ?: -1).toDouble() / NS_PER_MS
+        val finishingTime = (eventHandler.finishingTime ?: -1).toDouble() / NS_PER_MS
+        val totalTime = (eventHandler.totalTime ?: -1).toDouble() / NS_PER_MS
         return BenchResult(
             input.testCase.name,
             input.testCase.file,
@@ -166,12 +172,14 @@ abstract class RunBenchmarkTask(
             astSize,
             results?.proposals?.size() ?: 0,
             Timings(
-                (eventHandler.parseTime ?: -1).toDouble() / NS_PER_MS,
-                (eventHandler.preparationTime ?: -1).toDouble() / NS_PER_MS,
-                (eventHandler.analysisTime ?: -1).toDouble() / NS_PER_MS,
-                (eventHandler.codeCompletionTime ?: -1).toDouble() / NS_PER_MS,
-                (eventHandler.finishingTime ?: -1).toDouble() / NS_PER_MS,
-                (eventHandler.totalTime ?: -1).toDouble() / NS_PER_MS,
+                parseTime,
+                preparationTime,
+                analyzeTime,
+                codeCompletionTime,
+                finishingTime,
+                totalTime,
+
+                parseTime + preparationTime + analyzeTime + finishingTime,
 
                 (0).toDouble() / NS_PER_MS, // TODO
                 (0).toDouble() / NS_PER_MS, // TODO

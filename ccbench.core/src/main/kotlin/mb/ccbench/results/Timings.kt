@@ -14,6 +14,8 @@ import java.util.*
  * @property finishingTime Time spent on finishing the code completion proposals, by downgrading, implicating, and pretty-printing them; in ms.
  * @property totalTime Time spent on the whole code completion, from parsing to finishing; in ms.
  *
+ * @property notCodeCompletionTime Time _not_ spent on the code completion task; in ms.
+ *
  * @property expandRulesTime Time spent on expanding rules; in ms.
  * @property expandInjectionsTime Time spent on expanding injections; in ms.
  * @property expandQueriesTime Time spent on expanding queries; in ms.
@@ -26,6 +28,8 @@ data class Timings(
     val codeCompletionTime: Double,
     val finishingTime: Double,
     val totalTime: Double,
+
+    val notCodeCompletionTime: Double,
 
     val expandRulesTime: Double,
     val expandInjectionsTime: Double,
@@ -41,6 +45,8 @@ data class Timings(
             "CodeCompletionTime",
             "FinishingTime",
             "TotalTime",
+
+            "NoteCodeCompletionTime",
 
             "ExpandRulesTime",
             "ExpandInjectionsTime",
@@ -69,6 +75,8 @@ data class Timings(
             decimalFormatter.format(obj.finishingTime),           // ms
             decimalFormatter.format(obj.totalTime),               // ms
 
+            decimalFormatter.format(obj.notCodeCompletionTime),  // ms
+
             decimalFormatter.format(obj.expandRulesTime),         // ms
             decimalFormatter.format(obj.expandInjectionsTime),    // ms
             decimalFormatter.format(obj.expandQueriesTime),       // ms
@@ -90,9 +98,11 @@ data class Timings(
             decimalFormatter.parse(values[offset + 5]).toDouble(),
 
             decimalFormatter.parse(values[offset + 6]).toDouble(),
+
             decimalFormatter.parse(values[offset + 7]).toDouble(),
             decimalFormatter.parse(values[offset + 8]).toDouble(),
             decimalFormatter.parse(values[offset + 9]).toDouble(),
+            decimalFormatter.parse(values[offset + 10]).toDouble(),
         )
     }
 }

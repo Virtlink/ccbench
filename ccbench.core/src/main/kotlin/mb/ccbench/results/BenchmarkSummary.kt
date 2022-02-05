@@ -67,6 +67,8 @@ data class BenchmarkSummary(
             val finishingTimeStats = DescriptiveStatistics()
             val totalTimeStats = DescriptiveStatistics()
 
+            val notCodeCompletionTimeStats = DescriptiveStatistics()
+
             val expandRulesTimeStats = DescriptiveStatistics()
             val expandInjectionsTimeStats = DescriptiveStatistics()
             val expandQueriesTimeStats = DescriptiveStatistics()
@@ -79,6 +81,8 @@ data class BenchmarkSummary(
                 codeCompletionTimeStats.addValue(result.timings.codeCompletionTime)
                 finishingTimeStats.addValue(result.timings.finishingTime)
                 totalTimeStats.addValue(result.timings.totalTime)
+
+                notCodeCompletionTimeStats.addValue(result.timings.notCodeCompletionTime)
 
                 expandRulesTimeStats.addValue(result.timings.expandRulesTime)
                 expandInjectionsTimeStats.addValue(result.timings.expandInjectionsTime)
@@ -94,6 +98,8 @@ data class BenchmarkSummary(
                     f(codeCompletionTimeStats),
                     f(finishingTimeStats),
                     f(totalTimeStats),
+
+                    f(notCodeCompletionTimeStats),
 
                     f(expandRulesTimeStats),
                     f(expandInjectionsTimeStats),
