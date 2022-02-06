@@ -24,10 +24,11 @@ rsync -av ~/repos/ccbench-tiger/ w2019:tiger-benchmark/ \
 echo "Done!"
 
 # Execute the tests using:
-#./ccbench.tiger/bin/ccbench.tiger \
-#  run tiger-w2019 \
-#  -p tiger-benchmark/project/ \
-#  -i tiger-benchmark/cases/Tiger.yml \
-#  -o tiger-benchmark/results/ \
-#  -w 100 \
-#  --seed 12345
+# JAVA_OPTS="-Xss16M -Xms512M -Xmx4G -XX:ActiveProcessorCount=4" \
+# ./ccbench.tiger/bin/ccbench.tiger \
+#   run tiger-w2019 \
+#   -p tiger-benchmark/project/ \
+#   -i tiger-benchmark/cases/Tiger.yml \
+#   -o tiger-benchmark/results/ \
+#   -w 100 \
+#   --seed 12345

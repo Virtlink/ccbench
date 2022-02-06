@@ -24,10 +24,11 @@ rsync -av ~/repos/ccbench-chocopy/ w2019:chocopy-benchmark/ \
 echo "Done!"
 
 # Execute the tests using:
-#./ccbench.chocopy/bin/ccbench.chocopy \
-#  run chocopy-w2019 \
-#  -p chocopy-benchmark/project/ \
-#  -i chocopy-benchmark/cases/ChocoPy.yml \
-#  -o chocopy-benchmark/results/ \
-#  -w 100 \
-#  --seed 12345
+# JAVA_OPTS="-Xss16M -Xms512M -Xmx4G -XX:ActiveProcessorCount=4" \
+# ./ccbench.chocopy/bin/ccbench.chocopy \
+#   run chocopy-w2019 \
+#   -p chocopy-benchmark/project/ \
+#   -i chocopy-benchmark/cases/ChocoPy.yml \
+#   -o chocopy-benchmark/results/ \
+#   -w 100 \
+#   --seed 12345
