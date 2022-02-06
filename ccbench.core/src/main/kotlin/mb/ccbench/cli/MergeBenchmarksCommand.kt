@@ -17,6 +17,7 @@ import javax.inject.Inject
  * Merges benchmark results into one file, with summary.
  */
 class MergeBenchmarksCommand @Inject constructor(
+    private val versionInfo: VersionInfo,
     private val summarizer: BenchmarkSummarizer,
 ) : CliktCommand(name = "merge") {
     val inputFiles: List<Path> by option("-i", "--input", help = "Benchmark CSV results").path(mustExist = true, canBeFile = true, canBeDir = false).multiple(required = true)
@@ -25,6 +26,8 @@ class MergeBenchmarksCommand @Inject constructor(
     private val log = KotlinLogging.logger {}
 
     override fun run() {
+        versionInfo.print()
+
         val actualOutputFile = outputFile.toAbsolutePath()
 
         log.debug { "Reading result sets..."}

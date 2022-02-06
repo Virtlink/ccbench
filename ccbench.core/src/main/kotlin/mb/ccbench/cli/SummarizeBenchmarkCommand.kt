@@ -23,6 +23,7 @@ import javax.inject.Inject
  * Summarizes a benchmark.
  */
 class SummarizeBenchmarkCommand @Inject constructor(
+    private val versionInfo: VersionInfo,
     private val summarizer: BenchmarkSummarizer,
 ) : CliktCommand(name = "summarize") {
     val inputFile: Path by option("-i", "--input", help = "Benchmark CSV results").path(mustExist = true, canBeFile = true, canBeDir = false).required()
@@ -31,6 +32,8 @@ class SummarizeBenchmarkCommand @Inject constructor(
     private val log = KotlinLogging.logger {}
 
     override fun run() {
+        versionInfo.print()
+
         val actualInputFile = inputFile.toAbsolutePath()
         val actualOutputFile = outputFile?.toAbsolutePath() ?: actualInputFile.withExtension(".yml")
 

@@ -2,11 +2,14 @@ package mb.ccbench.chocopy.cli
 
 import mb.ccbench.cli.BuildBenchmarkCommand
 import mb.ccbench.chocopy.ChocopyBenchmarkBuilder
+import mb.ccbench.cli.VersionInfo
 import javax.inject.Inject
 
 class ChocopyBuildBenchmarkCommand @Inject constructor(
-    benchmarkBuilder: ChocopyBenchmarkBuilder
+    versionInfo: VersionInfo,
+    benchmarkBuilder: ChocopyBenchmarkBuilder,
 ) : BuildBenchmarkCommand(
+    versionInfo,
     ".py",
     benchmarkBuilder
 )

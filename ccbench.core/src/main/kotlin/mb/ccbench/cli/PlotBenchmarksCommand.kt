@@ -20,7 +20,9 @@ import javax.inject.Inject
 /**
  * Plots benchmarks.
  */
-class PlotBenchmarksCommand @Inject constructor() : CliktCommand(name = "plot") {
+class PlotBenchmarksCommand @Inject constructor(
+    private val versionInfo: VersionInfo,
+) : CliktCommand(name = "plot") {
     val inputFiles: List<Path> by option("-i", "--input", help = "Benchmark CSV results").path(mustExist = true, canBeFile = true, canBeDir = false).multiple(required = true)
     val inputNames: List<String> by option("-n", "--name", help = "Name of the benchmark in the legend").multiple(required = false)
     val outputFile: Path by option("-o", "--output", help = "Output file").path(mustExist = false, canBeFile = true, canBeDir = false).required()
@@ -34,6 +36,7 @@ class PlotBenchmarksCommand @Inject constructor() : CliktCommand(name = "plot") 
             log.error { "Number of names does not match number of input files" }
             throw ProgramResult(2)
         }
+        versionInfo.print()
 
         val actualTitle = if (title != null) title!! else "Performance"
         val actualOutputFile = outputFile.toAbsolutePath()

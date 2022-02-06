@@ -1,4 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Properties
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 //import com.adarshr.gradle.testlogger.theme.ThemeType
 
 plugins {
@@ -42,7 +46,7 @@ val slf4jVersion                = "1.7.33"
 val logbackVersion              = "1.2.6"
 val microutilsLoggingVersion    = "2.0.11"
 val daggerVersion               = "2.40.5"
-val progressbarVersion          = "0.9.2"
+val progressbarVersion          = "0.9.3"
 val cliktVersion                = "3.2.0"
 val mordantVersion              = "2.0.0-beta3"
 val commonsCsvVersion           = "1.9.0"
@@ -165,4 +169,45 @@ configure(subprojects.filter { "spree" !in it.name && "asterm" !in it.name }) {
     kapt {
         correctErrorTypes = true
     }
+
+
+    tasks {
+        val createProperties by registering {
+            dependsOn("processResources")
+            doLast {
+                val revision = "git describe --always".runCommand()
+                val fullRevision = "git log -n1 --format=%H".runCommand()
+                val propertiesDir = "$buildDir/resources/main"
+                mkdir(propertiesDir)
+                file("$propertiesDir/version.properties").writer().use { w ->
+                    val p = Properties()
+                    p["version"] = project.version.toString()
+                    p["revision"] = revision
+                    p["full-revision"] = fullRevision
+                    p["build-time"] =
+                        ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS).format(
+                            DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                        )
+                    p.store(w, "Version information")
+                }
+            }
+        }
+
+        classes {
+            dependsOn(createProperties)
+        }
+    }
+}
+
+
+fun String.runCommand(workingDir: File = file("./")): String {
+    val parts = this.split("\\s".toRegex())
+    val proc = ProcessBuilder(*parts.toTypedArray())
+        .directory(workingDir)
+        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+        .redirectError(ProcessBuilder.Redirect.PIPE)
+        .start()
+
+    proc.waitFor(1, TimeUnit.MINUTES)
+    return proc.inputStream.bufferedReader().readText().trim()
 }

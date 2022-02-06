@@ -17,6 +17,7 @@ import java.nio.file.Path
  * @property ext The extension of files to be prepared.
  */
 abstract class BuildBenchmarkCommand(
+    private val versionInfo: VersionInfo,
     private val ext: String,
     private val benchmarkBuilder: BenchmarkBuilder,
 ) : CliktCommand(name = "build") {
@@ -31,6 +32,8 @@ abstract class BuildBenchmarkCommand(
     private val log = KotlinLogging.logger {}
 
     override fun run() {
+        versionInfo.print()
+
         val actualProjectDir = projectDir.toAbsolutePath()
         val actualOutputDir = (outputDir ?: Path.of("output/")).toAbsolutePath()
         val actualTestCaseDir = (testCaseDir ?: actualOutputDir).toAbsolutePath()

@@ -19,6 +19,7 @@ import java.nio.file.Path
  * Command that runs tests.
  */
 abstract class RunBenchmarkCommand(
+    private val versionInfo: VersionInfo,
     private val benchmarkRunner: BenchmarkRunner,
 ) : CliktCommand(name = "run") {
     val name: String? by argument(help = "Name of the benchmark").optional()
@@ -36,6 +37,8 @@ abstract class RunBenchmarkCommand(
     private val log = KotlinLogging.logger {}
 
     override fun run() {
+        versionInfo.print()
+
         val actualProjectDir = projectDir.toAbsolutePath()
         val actualInputFile = inputFile.toAbsolutePath()
         val actualOutputDir = (outputDir ?: Path.of("output/")).toAbsolutePath()
