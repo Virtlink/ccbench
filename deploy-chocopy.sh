@@ -26,7 +26,7 @@ echo "Done!"
 # Execute the tests using:
 # JAVA_OPTS="-Xss16M -Xms512M -Xmx4G -XX:ActiveProcessorCount=4" \
 # ./ccbench.chocopy/bin/ccbench.chocopy \
-#   run chocopy-w2019 \
+#   run chocopy-4g-w2019 \
 #   -p chocopy-benchmark/project/ \
 #   -i chocopy-benchmark/cases/ChocoPy.yml \
 #   -o chocopy-benchmark/results/ \

@@ -26,7 +26,7 @@ echo "Done!"
 # Execute the tests using:
 # JAVA_OPTS="-Xss16M -Xms512M -Xmx4G -XX:ActiveProcessorCount=4" \
 # ./ccbench.tiger/bin/ccbench.tiger \
-#   run tiger-w2019 \
+#   run tiger-4g-w2019 \
 #   -p tiger-benchmark/project/ \
 #   -i tiger-benchmark/cases/Tiger.yml \
 #   -o tiger-benchmark/results/ \
